@@ -60,7 +60,7 @@ export default function DocsZh() {
                 href="/litepaper"
                 className={cn(
                   "px-4 py-2 cathedral-kicker text-[10px] transition-all  flex items-center gap-2",
-                  !isZhPath ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  !isZhPath ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <Globe className="w-3 h-3" />
@@ -70,7 +70,7 @@ export default function DocsZh() {
                 href="/litepaper/zh"
                 className={cn(
                   "px-4 py-2 cathedral-kicker text-[10px] transition-all  flex items-center gap-2",
-                  isZhPath ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  isZhPath ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <BookOpen className="w-3 h-3" />

@@ -37,7 +37,7 @@ export default function AdvancedTradingChart({
   poolAddress,
   tokenSymbol = 'TOKEN',
   marketCap = 0,
-  theme = 'dark',
+  theme = 'light',
   height = 500,
   width = '100%'
 }: AdvancedTradingChartProps) {
@@ -123,40 +123,41 @@ export default function AdvancedTradingChart({
         const containerWidth = chartContainerRef.current.clientWidth;
 
         const chartChromeHeight = 104;
+        const isLightTheme = theme === 'light';
         const chart = createChart(chartContainerRef.current, {
           layout: {
-            background: { color: '#0B0B0B' },
-            textColor: '#D9D9D9',
+            background: { color: isLightTheme ? '#FBFBFA' : '#0B0B0B' },
+            textColor: isLightTheme ? '#737373' : '#D9D9D9',
           },
           grid: {
-            vertLines: { color: 'rgba(255,255,255,0.04)', style: 1 },
-            horzLines: { color: 'rgba(255,255,255,0.04)', style: 1 },
+            vertLines: { color: isLightTheme ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.04)', style: 1 },
+            horzLines: { color: isLightTheme ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.04)', style: 1 },
           },
           width: containerWidth,
           height: Math.max(height - chartChromeHeight, 280),
           timeScale: {
             timeVisible: true,
             secondsVisible: ['1s', '5s', '30s'].includes(selectedTimeframe),
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: isLightTheme ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)',
           },
           rightPriceScale: {
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: isLightTheme ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)',
             scaleMargins: { top: 0.1, bottom: 0.1 },
           },
           crosshair: {
             mode: 1,
-            vertLine: { width: 1, color: 'rgba(255,255,255,0.14)', style: 3 },
-            horzLine: { width: 1, color: 'rgba(255,255,255,0.14)', style: 3 },
+            vertLine: { width: 1, color: isLightTheme ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.14)', style: 3 },
+            horzLine: { width: 1, color: isLightTheme ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.14)', style: 3 },
           },
         });
 
         chartInstanceRef.current = chart;
         const candleSeries = chart.addSeries(CandlestickSeries, {
-          upColor: '#10b981',
-          downColor: '#f43f5e',
+          upColor: isLightTheme ? '#22c55e' : '#10b981',
+          downColor: isLightTheme ? '#ef4444' : '#f43f5e',
           borderVisible: false,
-          wickUpColor: '#10b981',
-          wickDownColor: '#f43f5e',
+          wickUpColor: isLightTheme ? '#22c55e' : '#10b981',
+          wickDownColor: isLightTheme ? '#ef4444' : '#f43f5e',
         });
         candleSeriesRef.current = candleSeries;
 
@@ -238,7 +239,7 @@ export default function AdvancedTradingChart({
             <span className="cathedral-h2 text-[24px]">{tokenSymbol}</span>
             {currentPrice !== null && (
               <>
-                <span className="font-mono text-[14px] text-[color:var(--fg-strong)]">{currentPrice.toFixed(currentPrice < 0.001 ? 8 : 6)} SOL</span>
+                <span className="font-mono text-[13px] font-medium text-[color:var(--fg-body)]">{currentPrice.toFixed(currentPrice < 0.001 ? 8 : 6)} SOL</span>
                 <span className={`text-sm font-mono ${priceChange24h >= 0 ? 'text-[color:var(--success)]' : 'text-[color:var(--danger)]'}`}>
                   {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}%
                 </span>
@@ -252,12 +253,12 @@ export default function AdvancedTradingChart({
         {currentOHLC && (
           <div className="flex items-center gap-4 overflow-x-auto text-[11px] font-mono text-[color:var(--fg-muted)]">
             {marketCap > 0 && (
-              <span>MC <span className="text-[color:var(--fg-strong)]">{marketCap >= 1000000 ? `${(marketCap / 1000000).toFixed(2)}M` : marketCap >= 1000 ? `${(marketCap / 1000).toFixed(2)}K` : marketCap.toFixed(2)} SOL</span></span>
+              <span>MC <span className="text-[color:var(--fg-body)]">{marketCap >= 1000000 ? `${(marketCap / 1000000).toFixed(2)}M` : marketCap >= 1000 ? `${(marketCap / 1000).toFixed(2)}K` : marketCap.toFixed(2)} SOL</span></span>
             )}
-            <span>O <span className="text-[color:var(--fg-strong)]">{currentOHLC.open.toFixed(6)}</span></span>
-            <span>H <span className="text-[color:var(--fg-strong)]">{currentOHLC.high.toFixed(6)}</span></span>
+            <span>O <span className="text-[color:var(--fg-body)]">{currentOHLC.open.toFixed(6)}</span></span>
+            <span>H <span className="text-[color:var(--fg-body)]">{currentOHLC.high.toFixed(6)}</span></span>
             <span>L <span className="text-[color:var(--danger)]">{currentOHLC.low.toFixed(6)}</span></span>
-            <span>C <span className="text-[color:var(--fg-strong)]">{currentOHLC.close.toFixed(6)}</span></span>
+            <span>C <span className="text-[color:var(--fg-body)]">{currentOHLC.close.toFixed(6)}</span></span>
           </div>
         )}
       </div>

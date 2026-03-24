@@ -17,9 +17,8 @@ export default function Footer() {
     <footer className="border-t border-border bg-[color:var(--bg-page)] px-4 py-3">
       <div className="flex justify-end">
         <div className="flex items-center gap-5 text-[11px] uppercase tracking-[0.18em] font-mono text-[color:var(--fg-muted)]">
-          <Link href="https://x.com/cathedral_dev" target="_blank" className="hover:text-[color:var(--fg-strong)] flex items-center gap-2">
+          <Link href="https://x.com/BoringIdea" target="_blank" className="hover:text-[color:var(--fg-strong)] flex items-center gap-2">
             <XIcon />
-            X
           </Link>
           <Link href="/litepaper" className="hover:text-[color:var(--fg-strong)] flex items-center gap-2">
             <BookOpen className="h-3.5 w-3.5" />

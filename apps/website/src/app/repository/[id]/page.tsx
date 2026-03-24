@@ -451,7 +451,7 @@ export default function Repository({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-[#0d0d0d] text-foreground font-mono leading-tight">
+    <div className="flex flex-col min-h-full bg-[color:var(--bg-page)] text-foreground font-mono leading-tight">
       <Header />
 
       <main className="relative flex flex-1">
@@ -467,7 +467,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                   </div>
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h1 className="truncate text-[28px] font-semibold uppercase tracking-tight text-[color:var(--fg-strong)]">
+                      <h1 className="truncate text-[28px] font-semibold tracking-tight text-[color:var(--fg-strong)]">
                         {repository?.owner}/{repository?.name}
                       </h1>
                       <span className="shrink-0 border border-border bg-[color:var(--bg-page)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
@@ -538,9 +538,9 @@ export default function Repository({ params }: { params: { id: string } }) {
                     <m.icon size={10} className={m.color} />
                     {m.label}
                   </div>
-                  <div className="text-[28px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">
+                  <div className="text-[24px] font-medium leading-none tracking-tight text-[color:var(--fg-body)]">
                     {m.value}
-                    {m.unit && <span className="ml-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">{m.unit}</span>}
+                    {m.unit && <span className="ml-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">{m.unit}</span>}
                   </div>
                 </div>
               ))}
@@ -554,7 +554,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                 poolAddress={poolInfo.pool}
                 tokenSymbol={tokenInfo.symbol}
                 marketCap={price * (poolOverview?.totalSupply ?? 0)}
-                theme="dark"
+                theme="light"
                 height={520}
               />
             ) : (
@@ -577,7 +577,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as any)}
                   className={cn(
-                    "px-4 py-3 text-[10px] uppercase font-bold tracking-widest transition-colors border-b",
+                    "px-4 py-3 text-[10px] uppercase font-medium tracking-widest transition-colors border-b",
                     activeTab === tab.key ? "border-[color:var(--fg-strong)] text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -604,7 +604,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                         <td className="py-1 font-mono text-muted-foreground">
                           {order.user ? `${order.user.slice(0, 4)}...${order.user.slice(-4)}` : (language === 'zh' ? "未知" : "unknown")}
                         </td>
-                        <td className={cn("py-1 font-bold", order.side === 'buy' ? "text-[color:var(--success)]" : "text-[color:var(--danger)]")}>
+                        <td className={cn("py-1 font-medium", order.side === 'buy' ? "text-[color:var(--success)]" : "text-[color:var(--danger)]")}>
                           {language === 'zh'
                             ? order.side === 'buy' ? '买入' : '卖出'
                             : order.side.toUpperCase()}
@@ -651,9 +651,9 @@ export default function Repository({ params }: { params: { id: string } }) {
                     ].map((m, i) => (
                       <div key={i} className="bg-[color:var(--bg-page)] p-4">
                         <div className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold mb-1.5">{m.label}</div>
-                        <div className="text-xl font-semibold  tracking-tighter text-foreground leading-none">
+                        <div className="text-[18px] font-medium tracking-tight text-[color:var(--fg-body)] leading-none">
                           {m.value}
-                          <span className="text-[9px] ml-1.5 opacity-40 font-bold">{m.unit}</span>
+                          <span className="text-[9px] ml-1.5 opacity-50 font-medium">{m.unit}</span>
                         </div>
                       </div>
                     ))}
@@ -668,7 +668,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                             {repository.language.toUpperCase()}
                           </span>
                         )}
-                        <span className="border border-border/40 bg-[color:var(--bg-muted)] px-2 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">
+                          <span className="border border-border/40 bg-[color:var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
                           Git-Core
                         </span>
                       </div>
@@ -678,11 +678,11 @@ export default function Repository({ params }: { params: { id: string } }) {
                       <div className="flex items-center gap-4 text-[11px]">
                         <div className="flex items-center gap-1.5">
                           <Star size={10} className="text-[color:var(--fg-strong)]" />
-                          <span className="font-bold">{repository?.stargazersCount || 0}</span>
+                          <span className="font-medium text-[color:var(--fg-body)]">{repository?.stargazersCount || 0}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <GitFork size={10} className="text-[color:var(--fg-strong)]" />
-                          <span className="font-bold">{repository?.forksCount || 0}</span>
+                          <span className="font-medium text-[color:var(--fg-body)]">{repository?.forksCount || 0}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <Activity size={10} className="text-[color:var(--success)]" />
@@ -705,7 +705,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                   <Button
                     size="sm"
                     onClick={() => setIsAIChatOpen(true)}
-                    className="bg-primary text-primary-foreground hover:opacity-90 text-[10px] uppercase font-semibold tracking-[0.18em]"
+                    className="border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)] hover:bg-[color:var(--accent-soft)] text-[10px] uppercase font-semibold tracking-[0.18em]"
                   >
                     {t('repository.ai_chat.launch_analyst')}
                   </Button>
@@ -727,13 +727,23 @@ export default function Repository({ params }: { params: { id: string } }) {
             <div className="flex gap-1 border border-border bg-[color:var(--bg-page)] p-1">
               <button
                 onClick={() => setIsBuying(true)}
-                className={cn("px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors", isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-[color:var(--fg-strong)]")}
+                className={cn(
+                  "px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors",
+                  isBuying
+                    ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]"
+                    : "text-muted-foreground hover:text-[color:var(--fg-strong)]"
+                )}
               >
                 {t('repository.trade_panel.buy')}
               </button>
               <button
                 onClick={() => setIsBuying(false)}
-                className={cn("px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors", !isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-[color:var(--fg-strong)]")}
+                className={cn(
+                  "px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors",
+                  !isBuying
+                    ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]"
+                    : "text-muted-foreground hover:text-[color:var(--fg-strong)]"
+                )}
               >
                 {t('repository.trade_panel.sell')}
               </button>
@@ -753,7 +763,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value) || 0)}
-                  className="h-16 border-border bg-[color:var(--bg-page)] text-center font-mono text-[32px] tracking-tight text-[color:var(--fg-strong)] focus:ring-1 focus:ring-ring"
+                  className="h-16 border-border bg-[color:var(--bg-page)] text-center font-mono text-[28px] font-medium tracking-tight text-[color:var(--fg-body)] focus:ring-1 focus:ring-ring"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   {language === 'zh' ? '份额' : 'Shares'}
@@ -784,7 +794,7 @@ export default function Repository({ params }: { params: { id: string } }) {
               <div className="h-px border-t border-border" />
               <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em]">
                 <span className="text-muted-foreground">{isBuying ? t('repository.trade_panel.estimated_cost') : t('repository.trade_panel.estimated_return')}</span>
-                <span className="font-mono text-[20px] tracking-tight text-[color:var(--fg-strong)]">
+                <span className="font-mono text-[18px] font-medium tracking-tight text-[color:var(--fg-body)]">
                   {estimatedPrice && Number(estimatedPrice) !== 0
                     ? Number(estimatedPrice).toFixed(6) + ' SOL'
                     : '0.00'}
@@ -799,7 +809,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                 "h-14 w-full text-sm font-semibold uppercase tracking-[0.24em] transition-colors",
                 isLoading || amount <= 0
                   ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-muted)]"
-                  : "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)] hover:opacity-92"
+                  : "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)] hover:bg-[color:var(--accent-soft)]"
               )}
             >
               {isLoading ? t('repository.trade_panel.executing') : (isBuying ? t('repository.trade_panel.confirm_buy') : t('repository.trade_panel.confirm_sell'))}
@@ -814,11 +824,11 @@ export default function Repository({ params }: { params: { id: string } }) {
               <div className="grid grid-cols-2 gap-3">
                 <div className="border border-border bg-[color:var(--bg-surface)] p-3">
                   <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('repository.trade_panel.holdings')}</div>
-                  <div className="text-[26px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">{balance.toFixed(4)}</div>
+                  <div className="text-[22px] font-medium leading-none tracking-tight text-[color:var(--fg-body)]">{balance.toFixed(4)}</div>
                 </div>
                 <div className="border border-border bg-[color:var(--bg-surface)] p-3">
                   <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('repository.trade_panel.value')} (SOL)</div>
-                  <div className="text-[26px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">{(balance * price).toFixed(4)}</div>
+                  <div className="text-[22px] font-medium leading-none tracking-tight text-[color:var(--fg-body)]">{(balance * price).toFixed(4)}</div>
                 </div>
               </div>
             </div>
@@ -852,8 +862,8 @@ export default function Repository({ params }: { params: { id: string } }) {
           <div className="flex-1 px-4 space-y-8">
             <div className="p-6 cathedral-panel space-y-4">
               <div className="flex gap-1 border border-border bg-[color:var(--bg-page)] p-1 h-12">
-                <button onClick={() => setIsBuying(true)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground")}>{t('repository.trade_panel.buy')}</button>
-                <button onClick={() => setIsBuying(false)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", !isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground")}>{t('repository.trade_panel.sell')}</button>
+                <button onClick={() => setIsBuying(true)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", isBuying ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground")}>{t('repository.trade_panel.buy')}</button>
+                <button onClick={() => setIsBuying(false)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", !isBuying ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground")}>{t('repository.trade_panel.sell')}</button>
               </div>
               <div className="relative">
                 <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} className="bg-[color:var(--bg-page)] h-16 text-2xl font-mono border border-border pr-16" />
@@ -872,7 +882,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                 "w-full h-20 text-lg font-semibold uppercase tracking-[0.3em]",
                 isLoading || amount <= 0
                   ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-muted)]"
-                  : "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)] hover:opacity-90"
+                  : "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)] hover:bg-[color:var(--accent-soft)]"
               )}
             >
               {isLoading ? t('repository.trade_panel.executing') : (isBuying ? t('repository.trade_panel.confirm_buy') : t('repository.trade_panel.confirm_sell'))}

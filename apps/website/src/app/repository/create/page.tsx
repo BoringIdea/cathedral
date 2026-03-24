@@ -344,8 +344,8 @@ export default function CreateCoin() {
                           </div>
                         </div>
                         {selectedRepo === repo.name && (
-                          <div className="flex h-4 w-4 items-center justify-center bg-primary">
-                            <Plus className="w-3 h-3 text-white rotate-45" />
+                          <div className="flex h-4 w-4 items-center justify-center border border-border bg-[color:var(--bg-muted)]">
+                            <Plus className="w-3 h-3 rotate-45 text-[color:var(--fg-strong)]" />
                           </div>
                         )}
                       </div>
@@ -450,10 +450,10 @@ export default function CreateCoin() {
                   type="button"
                   onClick={handleBindWallet}
                   disabled={!connected || isBindingWallet}
-                  className="flex h-16 w-full items-center justify-center gap-3 bg-primary text-primary-foreground uppercase tracking-[0.3em] transition-all hover:opacity-90"
+                  className="flex h-16 w-full items-center justify-center gap-3 border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)] uppercase tracking-[0.3em] transition-all hover:bg-[color:var(--accent-soft)]"
                 >
                   {isBindingWallet ? (
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-black/15 border-t-[color:var(--fg-strong)]" />
                   ) : (
                     <>
                       <Wallet className="w-5 h-5" />
@@ -465,10 +465,10 @@ export default function CreateCoin() {
                 <Button
                   type="submit"
                   disabled={!connected || isLoading || !selectedRepo || walletMismatch}
-                  className="flex h-16 w-full items-center justify-center gap-3 bg-primary text-primary-foreground uppercase tracking-[0.3em] transition-all hover:opacity-90 disabled:bg-[color:var(--bg-muted)] disabled:text-[color:var(--fg-muted)] disabled:shadow-none"
+                  className="flex h-16 w-full items-center justify-center gap-3 border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)] uppercase tracking-[0.3em] transition-all hover:bg-[color:var(--accent-soft)] disabled:bg-[color:var(--bg-muted)] disabled:text-[color:var(--fg-muted)] disabled:shadow-none"
                 >
                   {isLoading ? (
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/25 border-t-white" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-black/15 border-t-[color:var(--fg-strong)]" />
                   ) : (
                     <>
                       <Rocket className="w-5 h-5" />

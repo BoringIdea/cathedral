@@ -101,7 +101,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-[color:var(--bg-page)]/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur">
       <div className="flex h-[58px] items-center justify-between px-6">
         <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           <div className="flex h-9 w-9 items-center justify-center border border-border bg-[color:var(--bg-surface)]">
@@ -113,12 +113,12 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <div className="hidden items-center gap-1 border border-border px-1 py-1 md:flex">
+          <div className="hidden items-center gap-1 border border-border bg-white px-1 py-1 md:flex">
             <button
               onClick={() => setLanguage("en")}
               className={cn(
                 "px-2 py-1 text-[10px] uppercase tracking-[0.18em] font-mono transition-colors",
-                language === "en" ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-foreground"
+                language === "en" ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground hover:text-foreground"
               )}
             >
               EN
@@ -127,7 +127,7 @@ export default function Header() {
               onClick={() => setLanguage("zh")}
               className={cn(
                 "px-2 py-1 text-[10px] uppercase tracking-[0.18em] font-mono transition-colors",
-                language === "zh" ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-foreground"
+                language === "zh" ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-strong)]" : "text-muted-foreground hover:text-foreground"
               )}
             >
               中文

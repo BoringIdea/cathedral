@@ -38,21 +38,21 @@ export const WalletButton = () => (
   <div className="hover:scale-105 transition-transform duration-200">
     <WalletMultiButton
       style={{
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#FFFFFF',
         height: '36px',
         padding: '0 16px',
         fontSize: '14px',
         lineHeight: '36px',
         borderRadius: '8px',
         fontWeight: '500',
-        border: '1px solid rgba(55, 65, 81, 0.5)',
+        border: '1px solid rgba(0, 0, 0, 0.12)',
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-        color: '#ffffff',
+        color: '#111111',
         boxShadow: 'none',
       }} 
-      className="hover:bg-[#2A2A2A] hover:border-gray-600"
+      className="hover:bg-[#f5f5f4] hover:border-black/20"
     />
   </div>
 );
