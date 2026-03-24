@@ -1,12 +1,13 @@
 "use client";
 
-import { MessageCircle, Bot, User } from "lucide-react";
+import { Bot, User } from "lucide-react";
 import { MDXMessageRenderer } from "@/components/ai-chat/mdx-message-renderer";
+import { cn } from "@/lib/utils";
 
 interface ChatMessage {
   id: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
 }
 
@@ -17,52 +18,56 @@ interface MessageListProps {
 
 export function MessageList({ messages, isLoading }: MessageListProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {messages.map((message) => (
         <div
           key={message.id}
-          className={`flex gap-3 ${
-            message.role === 'user' ? 'justify-end' : 'justify-start'
-          }`}
+          className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}
         >
-          {message.role === 'assistant' && (
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Bot className="w-4 h-4 text-blue-400" />
+          {message.role === "assistant" && (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-[color:var(--bg-muted)]">
+              <Bot className="h-4 w-4 text-[color:var(--fg-strong)]" />
             </div>
           )}
+
           <div
-            className={`max-w-[80%] rounded-lg p-3 ${
-              message.role === 'user'
-                ? 'bg-blue-500 text-white'
-                : 'bg-[#2A2A2A] text-gray-100 border border-gray-700/50'
-            }`}
+            className={cn(
+              "max-w-[80%] border px-4 py-3",
+              message.role === "user"
+                ? "border-border bg-[color:var(--fg-strong)] text-[color:var(--bg-surface)]"
+                : "border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-body)]"
+            )}
           >
-            {message.role === 'assistant' ? (
+            {message.role === "assistant" ? (
               <MDXMessageRenderer content={message.content} />
             ) : (
-              <div className="text-white whitespace-pre-wrap">{message.content}</div>
+              <div className="whitespace-pre-wrap font-mono text-[11px] leading-6">{message.content}</div>
             )}
-            <div className="text-xs text-gray-400 mt-1">
+            <div
+              className={cn(
+                "mt-2 font-mono text-[10px] uppercase tracking-[0.14em]",
+                message.role === "user" ? "text-[color:var(--bg-muted)]/70" : "text-[color:var(--fg-muted)]"
+              )}
+            >
               {message.timestamp.toLocaleTimeString()}
             </div>
           </div>
-          {message.role === 'user' && (
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-emerald-400" />
+
+          {message.role === "user" && (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-[color:var(--fg-strong)]">
+              <User className="h-4 w-4 text-[color:var(--bg-surface)]" />
             </div>
           )}
         </div>
       ))}
+
       {isLoading && (
         <div className="flex gap-3 justify-start">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Bot className="w-4 h-4 text-blue-400" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-[color:var(--bg-muted)]">
+            <Bot className="h-4 w-4 text-[color:var(--fg-strong)]" />
           </div>
-          <div className="bg-[#2A2A2A] rounded-lg p-3 border border-gray-700/50">
-            <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
-              <span className="text-gray-400">AI is thinking...</span>
-            </div>
+          <div className="border border-dashed border-border bg-[color:var(--bg-surface)] px-4 py-3">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">Thinking…</span>
           </div>
         </div>
       )}

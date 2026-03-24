@@ -115,8 +115,8 @@ export default function SmartTradingChart({
       return (
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
-            <p className="text-gray-400 mb-2">{t('chart.loading_price')}</p>
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mb-2 text-[color:var(--fg-muted)]">{t('chart.loading_price')}</p>
+            <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-[color:var(--fg-strong)]"></div>
           </div>
         </div>
       );
@@ -124,7 +124,7 @@ export default function SmartTradingChart({
 
     const { currentPrice, change24h, volume24h } = birdeyePriceData;
     const isPositive = change24h >= 0;
-    const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
+    const changeColor = isPositive ? 'text-[color:var(--fg-strong)]' : 'text-[color:var(--danger)]';
 
     // Get filtered data based on selected timeframe
     const filteredPriceHistory = getFilteredData();
@@ -139,19 +139,16 @@ export default function SmartTradingChart({
     const timeframes = ['1m', '5m', '15m', '1h', '4h', '1D'];
 
     return (
-      <div className="h-full flex flex-col bg-[#1a1a1a] rounded-lg border border-gray-700 overflow-hidden">
+      <div className="h-full overflow-hidden border border-border bg-[color:var(--bg-surface)]">
         {/* Chart Header */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-[#1a1a1a]">
+        <div className="flex items-center justify-between border-b border-border bg-[color:var(--bg-muted)] px-3 py-3">
           <div className="flex items-center space-x-4">
             {/* Timeframe buttons */}
             {timeframes.map((tf) => (
               <button
                 key={tf}
                 onClick={() => handleTimeframeChange(tf)}
-                className={`px-3 py-1 text-xs rounded transition-colors ${selectedTimeframe === tf
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                className={`border px-3 py-1 text-xs transition-colors ${selectedTimeframe === tf ? 'border-border bg-[color:var(--fg-strong)] text-[color:var(--bg-surface)]' : 'border-transparent bg-transparent text-[color:var(--fg-muted)] hover:border-border hover:bg-[color:var(--bg-muted)] hover:text-[color:var(--fg-strong)]'}`}
               >
                 {tf}
               </button>
@@ -160,11 +157,11 @@ export default function SmartTradingChart({
           <div className="flex items-center space-x-4">
             {/* Chart type indicator */}
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-500 rounded"></div>
-              <span className="text-xs text-gray-400">Line</span>
+              <div className="h-4 w-4 border border-border bg-[color:var(--fg-strong)]"></div>
+              <span className="text-xs text-[color:var(--fg-muted)]">Line</span>
             </div>
             {/* Indicators button */}
-            <button className="px-3 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors">
+            <button className="border border-border bg-[color:var(--bg-surface)] px-3 py-1 text-xs text-[color:var(--fg-body)] transition-colors hover:bg-[color:var(--bg-muted)]">
               fₓ Indicators
             </button>
           </div>
@@ -203,7 +200,7 @@ export default function SmartTradingChart({
               y1={300 - ((currentPrice - minPrice) / priceRange) * 250 - 25}
               x2="800"
               y2={300 - ((currentPrice - minPrice) / priceRange) * 250 - 25}
-              stroke="#6b7280"
+              stroke="#8d867e"
               strokeWidth="1"
               strokeDasharray="5,5"
             />
@@ -225,28 +222,28 @@ export default function SmartTradingChart({
           </svg>
 
           {/* Price labels */}
-          <div className="absolute right-4 top-4 text-xs text-gray-400">
+          <div className="absolute right-4 top-4 text-xs text-[color:var(--fg-muted)]">
             <div>High: ${maxPrice.toFixed(8)}</div>
             <div>Low: ${minPrice.toFixed(8)}</div>
             <div className="mt-2">Current: ${currentPrice.toFixed(8)}</div>
-            <div className="mt-2 text-blue-400">Timeframe: {selectedTimeframe}</div>
+            <div className="mt-2 text-[color:var(--fg-strong)]">Timeframe: {selectedTimeframe}</div>
             <div className="mt-1">Data Points: {filteredPriceHistory.length}</div>
           </div>
         </div>
 
         {/* Bottom toolbar */}
-        <div className="flex items-center justify-between p-3 border-t border-gray-700 bg-[#1a1a1a]">
+        <div className="flex items-center justify-between border-t border-border bg-[color:var(--bg-muted)] px-3 py-3">
           <div className="flex items-center space-x-4">
-            <span className="text-xs text-gray-400">Volume: ${volume24h.toLocaleString()}</span>
+            <span className="text-xs text-[color:var(--fg-muted)]">Volume: ${volume24h.toLocaleString()}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <button className="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors">
+            <button className="border border-border bg-[color:var(--bg-surface)] px-2 py-1 text-xs text-[color:var(--fg-body)] transition-colors hover:bg-[color:var(--bg-muted)]">
               %
             </button>
-            <button className="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors">
+            <button className="border border-border bg-[color:var(--bg-surface)] px-2 py-1 text-xs text-[color:var(--fg-body)] transition-colors hover:bg-[color:var(--bg-muted)]">
               log
             </button>
-            <button className="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors">
+            <button className="border border-border bg-[color:var(--bg-surface)] px-2 py-1 text-xs text-[color:var(--fg-body)] transition-colors hover:bg-[color:var(--bg-muted)]">
               auto
             </button>
           </div>
@@ -259,13 +256,13 @@ export default function SmartTradingChart({
     return (
       <div
         style={{ height: `${height}px`, width }}
-        className="bg-[#1A1A1A] rounded-lg flex items-center justify-center border border-gray-700"
+        className="flex items-center justify-center border border-border bg-[color:var(--bg-surface)]"
       >
         <div className="text-center">
-          <p className="text-red-400 mb-4">{t('chart.load_failed')}</p>
+          <p className="mb-4 text-[color:var(--danger)]">{t('chart.load_failed')}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            className="border border-border bg-[color:var(--fg-strong)] px-4 py-2 text-[color:var(--bg-surface)] transition-colors hover:bg-[color:var(--fg-body)]"
           >
             {t('chart.retry')}
           </button>
@@ -278,19 +275,19 @@ export default function SmartTradingChart({
     <div className="space-y-4">
       {/* Birdeye price info - moved above chart, not overlapping */}
       {birdeyePriceData && (
-        <div className="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+        <div className="flex items-center justify-between border border-border bg-[color:var(--bg-surface)] p-4">
           <div>
-            <span className="text-xl font-bold text-white">{tokenSymbol}</span>
-            <span className={`ml-2 text-lg ${birdeyePriceData.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <span className="cathedral-h2 text-[28px]">{tokenSymbol}</span>
+            <span className={`ml-2 text-lg ${birdeyePriceData.change24h >= 0 ? 'text-[color:var(--fg-strong)]' : 'text-[color:var(--danger)]'}`}>
               ${birdeyePriceData.currentPrice.toFixed(8)}
             </span>
-            <span className={`ml-2 text-sm ${birdeyePriceData.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`ml-2 text-sm ${birdeyePriceData.change24h >= 0 ? 'text-[color:var(--fg-strong)]' : 'text-[color:var(--danger)]'}`}>
               {birdeyePriceData.change24h >= 0 ? '+' : ''}{birdeyePriceData.change24h.toFixed(2)}%
             </span>
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-[color:var(--fg-muted)]">
             <div>24h Volume</div>
-            <div className="text-white">${birdeyePriceData.volume24h.toLocaleString()}</div>
+            <div className="text-[color:var(--fg-strong)]">${birdeyePriceData.volume24h.toLocaleString()}</div>
           </div>
         </div>
       )}
@@ -303,7 +300,7 @@ export default function SmartTradingChart({
             height: `${height}px`,
             width
           }}
-          className="bg-[#1A1A1A] rounded-lg border border-gray-700"
+          className="border border-border bg-[color:var(--bg-surface)]"
         >
           {renderCustomChart()}
         </div>
@@ -311,11 +308,11 @@ export default function SmartTradingChart({
         {isLoading && (
           <div
             style={{ height: `${height}px`, width }}
-            className="absolute inset-0 bg-[#1A1A1A] rounded-lg flex items-center justify-center border border-gray-700 z-10"
+            className="absolute inset-0 z-10 flex items-center justify-center border border-border bg-[color:var(--bg-surface)]/90"
           >
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-400">{t('chart.loading_price_data')}</p>
+              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-[color:var(--fg-strong)]"></div>
+              <p className="text-[color:var(--fg-muted)]">{t('chart.loading_price_data')}</p>
             </div>
           </div>
         )}

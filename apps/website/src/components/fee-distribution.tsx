@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useAnchorProvider } from "@/components/solana-provider";
-import { Connection } from '@solana/web3.js';
+import { useAnchorProvider } from '@/components/solana-provider';
 import {
   distributeUserFee,
   distributePoolFee,
@@ -13,23 +12,20 @@ import {
   getPoolTokenMint,
   claimUserFees,
   validatePoolExists,
-  validateSolanaAddress,
-  getPoolCreator
-} from "@/lib/utils";
+  getPoolCreator,
+} from '@/lib/utils';
 import {
   User,
   GitBranch,
   Plus,
   Edit3,
   TrendingUp,
-  Wallet,
   Download,
   Activity,
   ArrowUpRight,
-  Loader2
+  Loader2,
 } from 'lucide-react';
-import { useToast } from "@/components/ui/toast";
-import { cn } from '@/lib/utils';
+import { useToast } from '@/components/ui/toast';
 import { useTranslation } from '@/lib/i18n-context';
 
 interface FeeRecipient {
@@ -46,6 +42,9 @@ interface FeeDistributionProps {
   isCreator: boolean;
 }
 
+const inputClassName =
+  'h-9 border-border bg-[color:var(--bg-surface)] font-mono text-[11px] text-[color:var(--fg-strong)] placeholder:text-[color:var(--fg-muted)] focus-visible:ring-ring';
+
 export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDistributionProps, 'isCreator'> & { isCreator?: boolean }) {
   const { publicKey } = useWallet();
   const provider = useAnchorProvider();
@@ -59,17 +58,15 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
   const [newPoolAddress, setNewPoolAddress] = useState('');
   const [newPoolPercentage, setNewPoolPercentage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isUserCreator, setIsUserCreator] = useState(false); // Internal state for creator permission
+  const [isUserCreator, setIsUserCreator] = useState(false);
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editingPool, setEditingPool] = useState<string | null>(null);
-  const [editUserPercentage, setEditUserPercentage] = useState('');
-  const [editPoolPercentage, setEditPoolPercentage] = useState('');
+  const [, setEditUserPercentage] = useState('');
+  const [, setEditPoolPercentage] = useState('');
   const [myFeeInfo, setMyFeeInfo] = useState<FeeRecipient | null>(null);
   const [isClaiming, setIsClaiming] = useState(false);
   const [poolCreators, setPoolCreators] = useState<Record<string, string>>({});
   const [isLoadingRecipients, setIsLoadingRecipients] = useState(false);
-
-  // ... (keeping fetchFeeRecipients, handleClaimFees, useEffect, handleDistributeUserFee, handleDistributePoolFee, formatSOL as they were) ...
 
   const fetchFeeRecipients = async () => {
     try {
@@ -80,7 +77,6 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
       const users: FeeRecipient[] = [];
       const pools: FeeRecipient[] = [];
 
-      // Check Creator Permission
       try {
         const creator = await getPoolCreator(provider, poolAddress);
         if (publicKey && creator) {
@@ -88,8 +84,8 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
         } else {
           setIsUserCreator(false);
         }
-      } catch (e) {
-        console.error("Failed to check creator permission", e);
+      } catch (error) {
+        console.error('Failed to check creator permission', error);
       }
 
       feeRecipients.forEach((recipient: any) => {
@@ -98,7 +94,7 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
           address: recipient.address.toString(),
           sharePercentage: recipient.sharePercentage,
           totalFee: recipient.totalFee.toNumber(),
-          unclaimedFee: recipient.unclaimedFee.toNumber()
+          unclaimedFee: recipient.unclaimedFee.toNumber(),
         };
 
         if (feeRecipient.recipientType === 'User') users.push(feeRecipient);
@@ -113,15 +109,15 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
         try {
           const creator = await getPoolCreator(provider, poolRecipient.address);
           if (creator) poolCreatorMap[poolRecipient.address] = creator;
-        } catch (e) { }
+        } catch (error) {
+          console.error('Failed to fetch pool creator', error);
+        }
       }
       setPoolCreators(poolCreatorMap);
 
       if (publicKey) {
-        const currentUserRecipient = feeRecipients.find((recipient: any) =>
-          // Use stricter string comparison or proper PK comparison if available on recipient object
-          recipient.address.toString() === publicKey.toString() &&
-          recipient.recipientType.user
+        const currentUserRecipient = feeRecipients.find(
+          (recipient: any) => recipient.address.toString() === publicKey.toString() && recipient.recipientType.user
         );
 
         if (currentUserRecipient) {
@@ -130,11 +126,12 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
             address: currentUserRecipient.address.toString(),
             sharePercentage: currentUserRecipient.sharePercentage,
             totalFee: currentUserRecipient.totalFee.toNumber(),
-            unclaimedFee: currentUserRecipient.unclaimedFee.toNumber()
+            unclaimedFee: currentUserRecipient.unclaimedFee.toNumber(),
           });
+        } else {
+          setMyFeeInfo(null);
         }
       }
-    } catch (error) {
     } finally {
       setIsLoadingRecipients(false);
     }
@@ -156,7 +153,7 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
 
   useEffect(() => {
     if (poolAddress && provider) fetchFeeRecipients();
-  }, [poolAddress, provider, fetchFeeRecipients]);
+  }, [poolAddress, provider]);
 
   const handleDistributeUserFee = async (recipientAddress: string, percentage: number) => {
     if (!provider || !publicKey) return;
@@ -180,7 +177,14 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
       const poolExists = await validatePoolExists(provider, distributePoolAddress);
       if (!poolExists) throw new Error('Target pool does not exist');
       const distributePoolTokenMint = await getPoolTokenMint(provider, distributePoolAddress);
-      const txSignature = await distributePoolFee(provider, poolAddress, tokenMint, distributePoolAddress, distributePoolTokenMint, percentage);
+      const txSignature = await distributePoolFee(
+        provider,
+        poolAddress,
+        tokenMint,
+        distributePoolAddress,
+        distributePoolTokenMint,
+        percentage
+      );
       addToast(`Pool fee distributed! TX: ${txSignature.substring(0, 8)}...`, 'success');
       fetchFeeRecipients();
     } catch (error: any) {
@@ -191,242 +195,268 @@ export default function FeeDistribution({ poolAddress, tokenMint }: Omit<FeeDist
   };
 
   const formatSOL = (lamports: number) => (lamports / 1e9).toFixed(6);
+  const totalDistributed = userRecipients.reduce((sum, r) => sum + r.totalFee, 0) + poolRecipients.reduce((sum, r) => sum + r.totalFee, 0);
+  const totalUnclaimed = userRecipients.reduce((sum, r) => sum + r.unclaimedFee, 0) + poolRecipients.reduce((sum, r) => sum + r.unclaimedFee, 0);
 
-  return (
-    <div className="h-full flex flex-col font-mono text-[11px] leading-tight select-none overflow-hidden">
-      {/* Top Banner: Global Fees Summary */}
-      <div className="grid grid-cols-2 border-b border-border bg-secondary/5 h-20 shrink-0 overflow-hidden">
-        <div className="px-5 py-3 border-r border-border relative">
-          <div className="flex items-center gap-1.5 text-muted-foreground uppercase tracking-widest font-black text-[9px] mb-1">
-            <Activity className="w-2.5 h-2.5 text-emerald-500" />
-            {t('repository.grant_panel.global_distributed')}
-          </div>
-          <div className="text-xl font-black italic tracking-tighter text-emerald-400">
-            {formatSOL(userRecipients.reduce((sum, r) => sum + r.totalFee, 0) + poolRecipients.reduce((sum, r) => sum + r.totalFee, 0))}
-            <span className="text-[10px] ml-1.5 opacity-50 not-italic">SOL</span>
-          </div>
-          <div className="absolute top-3 right-5 opacity-10 text-[24px] pointer-events-none">{t('repository.grant_panel.fee_watermark')}</div>
+  const RecipientRow = ({
+    recipient,
+    index,
+    kind,
+  }: {
+    recipient: FeeRecipient;
+    index: number;
+    kind: 'user' | 'pool';
+  }) => {
+    const isPool = kind === 'pool';
+    const creatorAddress = isPool ? poolCreators[recipient.address] : null;
+
+    return (
+      <div className="grid grid-cols-[auto_1fr_auto] items-start gap-3 border border-border bg-[color:var(--bg-surface)] px-3 py-3 transition-colors hover:bg-[color:var(--bg-muted)]">
+        <div className="flex h-8 w-8 items-center justify-center border border-border bg-[color:var(--bg-muted)] font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+          {String(index + 1).padStart(2, '0')}
         </div>
 
-        <div className="px-5 py-3 relative group">
-          <div className="flex items-center justify-between gap-1.5 mb-1">
-            <div className="flex items-center gap-1.5 text-muted-foreground uppercase tracking-widest font-black text-[9px]">
-              <TrendingUp className="w-2.5 h-2.5 text-orange-500" />
-              {t('repository.grant_panel.unclaimed_pool')}
+        <div className="min-w-0 space-y-1">
+          <div className="truncate font-mono text-[11px] text-[color:var(--fg-strong)]">{recipient.address}</div>
+          {creatorAddress && (
+            <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-[color:var(--fg-muted)]">
+              creator {creatorAddress.slice(0, 6)}...{creatorAddress.slice(-4)}
             </div>
-            {myFeeInfo && myFeeInfo.unclaimedFee > 0 && (
-              <button
-                onClick={handleClaimFees}
-                disabled={isClaiming}
-                className="text-[9px] font-black uppercase tracking-widest text-cathedral-400 hover:text-cathedral-500 transition-colors flex items-center gap-1 bg-cathedral-500/10 px-2 py-0.5 rounded-sm border border-cathedral-500/20"
-              >
-                {isClaiming ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Download className="w-2.5 h-2.5" />}
-                {t('repository.grant_panel.claim_my_share')}
-              </button>
-            )}
+          )}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[color:var(--fg-muted)]">
+            <span>{t(isPool ? 'repository.grant_panel.distributed' : 'repository.grant_panel.total')}: {formatSOL(recipient.totalFee)}</span>
+            <span>{t('repository.grant_panel.pending')}: {formatSOL(recipient.unclaimedFee)}</span>
           </div>
-          <div className="text-xl font-black italic tracking-tighter text-orange-400">
-            {formatSOL(userRecipients.reduce((sum, r) => sum + r.unclaimedFee, 0) + poolRecipients.reduce((sum, r) => sum + r.unclaimedFee, 0))}
-            <span className="text-[10px] ml-1.5 opacity-50 not-italic">SOL</span>
+        </div>
+
+        <div className="flex items-start gap-2">
+          <div className="text-right">
+            <div className="font-mono text-[13px] text-[color:var(--fg-strong)]">{recipient.sharePercentage}%</div>
           </div>
-          <div className="absolute top-3 right-5 opacity-10 text-[24px] pointer-events-none group-hover:opacity-5 transition-opacity">{t('repository.grant_panel.pool_watermark')}</div>
+          {isUserCreator && (
+            <button
+              onClick={() => {
+                if (isPool) {
+                  setEditingPool(recipient.address);
+                  setEditPoolPercentage(recipient.sharePercentage.toString());
+                } else {
+                  setEditingUser(recipient.address);
+                  setEditUserPercentage(recipient.sharePercentage.toString());
+                }
+              }}
+              className="mt-0.5 text-[color:var(--fg-muted)] transition-colors hover:text-[color:var(--fg-strong)]"
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
+    );
+  };
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-auto p-5 space-y-8 custom-scrollbar">
+  return (
+    <div className="flex h-full flex-col overflow-hidden text-[11px] leading-tight text-[color:var(--fg-body)]">
+      <div className="grid shrink-0 grid-cols-1 border-b border-border bg-[color:var(--bg-muted)] md:grid-cols-2">
+        <div className="space-y-2 border-b border-border px-5 py-4 md:border-b-0 md:border-r">
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">
+            <Activity className="h-3.5 w-3.5 text-[color:var(--fg-strong)]" />
+            <span>{t('repository.grant_panel.global_distributed')}</span>
+          </div>
+          <div className="cathedral-num text-[28px] leading-none">{formatSOL(totalDistributed)}</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">SOL</div>
+        </div>
 
-        {/* User's Claimable Section */}
-        {myFeeInfo && (
-          <section className="animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                <h3 className="uppercase tracking-widest font-black text-foreground">{t('repository.grant_panel.available_to_claim')}</h3>
-              </div>
-              <div className="text-[9px] px-2 py-0.5 border border-emerald-500/30 text-emerald-500 font-bold tracking-tighter rounded-full bg-emerald-500/5">
-                {t('repository.grant_panel.active_recipient')}
-              </div>
+        <div className="space-y-2 px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">
+              <TrendingUp className="h-3.5 w-3.5 text-[color:var(--fg-strong)]" />
+              <span>{t('repository.grant_panel.unclaimed_pool')}</span>
             </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-secondary/20 border border-border p-3 rounded-sm">
-                <span className="block text-[8px] text-muted-foreground uppercase mb-0.5">{t('repository.grant_panel.my_share')}</span>
-                <span className="text-lg font-black italic text-foreground leading-none">{myFeeInfo.sharePercentage}%</span>
-              </div>
-              <div className="bg-secondary/20 border border-border p-3 rounded-sm">
-                <span className="block text-[8px] text-muted-foreground uppercase mb-0.5">{t('repository.grant_panel.accumulated')}</span>
-                <span className="text-lg font-black italic text-foreground leading-none">{formatSOL(myFeeInfo.totalFee)}</span>
-              </div>
-              <div className="flex flex-col gap-3">
-                <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-sm flex-1">
-                  <span className="block text-[8px] text-emerald-500/70 uppercase mb-0.5">{t('repository.grant_panel.claimable')}</span>
-                  <span className="text-lg font-black italic text-emerald-400 leading-none">{formatSOL(myFeeInfo.unclaimedFee)}</span>
-                </div>
-              </div>
-            </div>
-
-            {myFeeInfo.unclaimedFee > 0 && (
+            {myFeeInfo && myFeeInfo.unclaimedFee > 0 && (
               <Button
                 onClick={handleClaimFees}
                 disabled={isClaiming}
-                className="w-full mt-3 h-10 bg-emerald-500 hover:bg-emerald-600 text-black font-black uppercase tracking-widest text-[10px] rounded-sm transition-all"
+                variant="outline"
+                size="sm"
+                className="h-8 border-border bg-[color:var(--bg-surface)] px-3 text-[10px] text-[color:var(--fg-strong)]"
               >
-                {isClaiming ? t('repository.grant_panel.processing') : (
-                  <span className="flex items-center gap-2">
-                    <Download className="w-3.5 h-3.5" />
-                    {t('repository.grant_panel.claim_distribution')}
-                  </span>
-                )}
+                {isClaiming ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1 h-3.5 w-3.5" />}
+                {t('repository.grant_panel.claim_my_share')}
               </Button>
             )}
-          </section>
-        )}
+          </div>
+          <div className="cathedral-num text-[28px] leading-none">{formatSOL(totalUnclaimed)}</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">SOL</div>
+        </div>
+      </div>
 
-        {/* Recipients Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          {/* USER RECIPIENTS */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-1.5">
-              <h3 className="uppercase tracking-widest font-black text-foreground flex items-center gap-2">
-                <User className="w-3 h-3 text-blue-500" />
-                {t('repository.grant_panel.collaborators')}
-              </h3>
-              <span className="text-[9px] text-muted-foreground font-bold">{userRecipients.length} {t('repository.grant_panel.slots')}</span>
-            </div>
-
-            <div className="space-y-1.5">
-              {userRecipients.map((r, i) => (
-                <div key={i} className="group flex items-center bg-secondary/10 border border-border/40 p-1.5 hover:border-blue-500/30 transition-all rounded-sm overflow-hidden">
-                  <div className="w-6 h-6 flex items-center justify-center bg-secondary/30 text-[9px] font-black mr-2 opacity-50">0{i + 1}</div>
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="text-[10px] font-bold text-foreground truncate font-mono">{r.address}</div>
-                    <div className="flex items-center gap-4 mt-1 opacity-60 text-[9px] uppercase tracking-tighter">
-                      <span>{t('repository.grant_panel.total')}: {formatSOL(r.totalFee)}</span>
-                      <span>{t('repository.grant_panel.pending')}: {formatSOL(r.unclaimedFee)}</span>
-                    </div>
+      <div className="flex-1 overflow-auto px-5 py-5 custom-scrollbar">
+        <div className="space-y-8">
+          {myFeeInfo && (
+            <section className="space-y-3 border border-border bg-[color:var(--bg-surface)] p-4">
+              <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">
+                    {t('repository.grant_panel.available_to_claim')}
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-sm font-black italic text-blue-400 leading-none">{r.sharePercentage}%</div>
-                    {isUserCreator && (
-                      <button
-                        onClick={() => { setEditingUser(r.address); setEditUserPercentage(r.sharePercentage.toString()); }}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-white transition-opacity mt-1.5"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
+                  <div className="cathedral-h2 mt-2 text-[24px]">{formatSOL(myFeeInfo.unclaimedFee)} SOL</div>
                 </div>
-              ))}
+                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+                  {t('repository.grant_panel.active_recipient')}
+                </div>
+              </div>
 
-              {isUserCreator && (
-                <div className="pt-2">
-                  <div className="flex gap-2">
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className="border border-border bg-[color:var(--bg-muted)] p-3">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+                    {t('repository.grant_panel.my_share')}
+                  </div>
+                  <div className="cathedral-num mt-2 text-[20px]">{myFeeInfo.sharePercentage}%</div>
+                </div>
+                <div className="border border-border bg-[color:var(--bg-muted)] p-3">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+                    {t('repository.grant_panel.accumulated')}
+                  </div>
+                  <div className="cathedral-num mt-2 text-[20px]">{formatSOL(myFeeInfo.totalFee)}</div>
+                </div>
+                <div className="border border-border bg-[color:var(--bg-surface)] p-3">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+                    {t('repository.grant_panel.claimable')}
+                  </div>
+                  <div className="cathedral-num mt-2 text-[20px]">{formatSOL(myFeeInfo.unclaimedFee)}</div>
+                </div>
+              </div>
+
+              {myFeeInfo.unclaimedFee > 0 && (
+                <Button
+                  onClick={handleClaimFees}
+                  disabled={isClaiming}
+                  variant="outline"
+                  className="h-10 w-full border-border bg-[color:var(--fg-strong)] text-[color:var(--bg-surface)] hover:bg-[color:var(--fg-body)]"
+                >
+                  {isClaiming ? (
+                    t('repository.grant_panel.processing')
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Download className="h-3.5 w-3.5" />
+                      {t('repository.grant_panel.claim_distribution')}
+                    </span>
+                  )}
+                </Button>
+              )}
+            </section>
+          )}
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            <section className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-2">
+                <h3 className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-strong)]">
+                  <User className="h-3.5 w-3.5" />
+                  {t('repository.grant_panel.collaborators')}
+                </h3>
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+                  {userRecipients.length} {t('repository.grant_panel.slots')}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {userRecipients.map((recipient, index) => (
+                  <RecipientRow key={`${recipient.address}-${index}`} recipient={recipient} index={index} kind="user" />
+                ))}
+
+                {isUserCreator && (
+                  <div className="grid gap-2 border border-dashed border-border bg-[color:var(--bg-muted)] p-3 md:grid-cols-[1fr_88px_auto]">
                     <Input
                       placeholder={t('repository.grant_panel.collaborator_placeholder')}
                       value={newUserAddress}
-                      onChange={e => setNewUserAddress(e.target.value)}
-                      className="flex-1 h-8 bg-black/40 border-border text-[10px] font-bold uppercase placeholder:opacity-30 rounded-sm focus:ring-1 focus:ring-blue-500/30"
+                      onChange={(e) => setNewUserAddress(e.target.value)}
+                      className={inputClassName}
                     />
                     <Input
                       placeholder="%"
                       value={newUserPercentage}
-                      onChange={e => setNewUserPercentage(e.target.value)}
-                      className="w-12 h-8 bg-black/40 border-border text-[10px] font-bold text-center rounded-sm focus:ring-1 focus:ring-blue-500/30"
+                      onChange={(e) => setNewUserPercentage(e.target.value)}
+                      className={`${inputClassName} text-center`}
                     />
                     <Button
-                      onClick={async () => { await handleDistributeUserFee(newUserAddress, parseInt(newUserPercentage)); setNewUserAddress(''); setNewUserPercentage(''); }}
+                      onClick={async () => {
+                        await handleDistributeUserFee(newUserAddress, parseInt(newUserPercentage, 10));
+                        setNewUserAddress('');
+                        setNewUserPercentage('');
+                      }}
                       disabled={isLoading || !newUserAddress}
-                      className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-black rounded-sm"
+                      variant="outline"
+                      className="h-9 border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-strong)]"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="mr-1 h-3.5 w-3.5" />
+                      add
                     </Button>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
+                )}
+              </div>
+            </section>
 
-          {/* POOL RECIPIENTS */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-1.5">
-              <h3 className="uppercase tracking-widest font-black text-foreground flex items-center gap-2">
-                <GitBranch className="w-3 h-3 text-purple-500" />
-                {t('repository.grant_panel.cross_pool')}
-              </h3>
-              <span className="text-[9px] text-muted-foreground font-bold">{poolRecipients.length} {t('repository.grant_panel.pools')}</span>
-            </div>
+            <section className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-2">
+                <h3 className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-strong)]">
+                  <GitBranch className="h-3.5 w-3.5" />
+                  {t('repository.grant_panel.cross_pool')}
+                </h3>
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+                  {poolRecipients.length} {t('repository.grant_panel.pools')}
+                </span>
+              </div>
 
-            <div className="space-y-1.5">
-              {poolRecipients.map((r, i) => (
-                <div key={i} className="group flex items-center bg-secondary/10 border border-border/40 p-1.5 hover:border-purple-500/30 transition-all rounded-sm overflow-hidden">
-                  <div className="w-6 h-6 flex items-center justify-center bg-secondary/30 text-[9px] font-black mr-2 opacity-50">0{i + 1}</div>
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="text-[10px] font-bold text-foreground truncate font-mono">{r.address}</div>
-                    <div className="flex items-center gap-4 mt-1 opacity-60 text-[9px] uppercase tracking-tighter">
-                      <span>{t('repository.grant_panel.distributed')}: {formatSOL(r.totalFee)}</span>
-                      <span>{t('repository.grant_panel.pending')}: {formatSOL(r.unclaimedFee)}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-sm font-black italic text-purple-400 leading-none">{r.sharePercentage}%</div>
-                    {isUserCreator && (
-                      <button
-                        onClick={() => { setEditingPool(r.address); setEditPoolPercentage(r.sharePercentage.toString()); }}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-white transition-opacity mt-1.5"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+              <div className="space-y-2">
+                {poolRecipients.map((recipient, index) => (
+                  <RecipientRow key={`${recipient.address}-${index}`} recipient={recipient} index={index} kind="pool" />
+                ))}
 
-              {isUserCreator && (
-                <div className="pt-2">
-                  <div className="flex gap-2">
+                {isUserCreator && (
+                  <div className="grid gap-2 border border-dashed border-border bg-[color:var(--bg-muted)] p-3 md:grid-cols-[1fr_88px_auto]">
                     <Input
                       placeholder={t('repository.grant_panel.target_pool_placeholder')}
                       value={newPoolAddress}
-                      onChange={e => setNewPoolAddress(e.target.value)}
-                      className="flex-1 h-8 bg-black/40 border-border text-[10px] font-bold uppercase placeholder:opacity-30 rounded-sm focus:ring-1 focus:ring-purple-500/30"
+                      onChange={(e) => setNewPoolAddress(e.target.value)}
+                      className={inputClassName}
                     />
                     <Input
                       placeholder="%"
                       value={newPoolPercentage}
-                      onChange={e => setNewPoolPercentage(e.target.value)}
-                      className="w-12 h-8 bg-black/40 border-border text-[10px] font-bold text-center rounded-sm focus:ring-1 focus:ring-purple-500/30"
+                      onChange={(e) => setNewPoolPercentage(e.target.value)}
+                      className={`${inputClassName} text-center`}
                     />
                     <Button
-                      onClick={async () => { await handleDistributePoolFee(newPoolAddress, parseInt(newPoolPercentage)); setNewPoolAddress(''); setNewPoolPercentage(''); }}
+                      onClick={async () => {
+                        await handleDistributePoolFee(newPoolAddress, parseInt(newPoolPercentage, 10));
+                        setNewPoolAddress('');
+                        setNewPoolPercentage('');
+                      }}
                       disabled={isLoading || !newPoolAddress}
-                      className="h-8 w-8 p-0 bg-purple-500 hover:bg-purple-600 text-black rounded-sm"
+                      variant="outline"
+                      className="h-9 border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-strong)]"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="mr-1 h-3.5 w-3.5" />
+                      add
                     </Button>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </section>
           </div>
 
-        </div>
-
-        {/* Global Alert / Info */}
-        <div className="bg-secondary/5 border-l-2 border-emerald-500/30 p-4 rounded-r-sm">
-          <div className="flex items-start gap-3">
-            <ArrowUpRight className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-foreground font-black uppercase tracking-widest text-[10px]">{t('repository.grant_panel.grant_protocol_title')}</p>
-              <p className="text-muted-foreground leading-normal">
+          <div className="flex items-start gap-3 border border-border bg-[color:var(--bg-muted)] p-4">
+            <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--fg-strong)]" />
+            <div className="space-y-1.5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-strong)]">
+                {t('repository.grant_panel.grant_protocol_title')}
+              </p>
+              <p className="cathedral-copy text-[13px] leading-6">
                 {t('repository.grant_panel.grant_protocol_description')}
               </p>
             </div>
           </div>
         </div>
-
       </div>
 
       <ToastContainer />

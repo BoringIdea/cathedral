@@ -376,7 +376,9 @@ export default function Repository({ params }: { params: { id: string } }) {
 
       const signature = await sendTransaction(newtransaction, connection);
 
-      alert('🚀Send transaction success, buy amount: ' + amount + ' Shares');
+      alert(language === 'zh'
+        ? `🚀交易已发送，买入数量：${amount} 份额`
+        : `🚀Send transaction success, buy amount: ${amount} Shares`);
       setTransactionComplete(true);
     } catch (error) {
       console.error(error);
@@ -432,7 +434,9 @@ export default function Repository({ params }: { params: { id: string } }) {
 
       const signature = await sendTransaction(newtransaction, connection);
 
-      alert('🚀Send transaction success, sell amount: ' + amount + ' Shares');
+      alert(language === 'zh'
+        ? `🚀交易已发送，卖出数量：${amount} 份额`
+        : `🚀Send transaction success, sell amount: ${amount} Shares`);
       setTransactionComplete(true);
     } catch (error) {
       console.error(error);
@@ -450,124 +454,119 @@ export default function Repository({ params }: { params: { id: string } }) {
     <div className="flex flex-col min-h-full bg-[#0d0d0d] text-foreground font-mono leading-tight">
       <Header />
 
-      <main className="flex-1 flex relative">
+      <main className="relative flex flex-1">
         {/* Middle Column: Repository Info, Chart & Tabs */}
         <div className="flex-1 flex flex-col border-r border-border">
           {/* Enhanced Header: Project Identity & Metadata */}
-          <div className="px-6 py-6 border-b border-border bg-secondary/5 space-y-4">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-cathedral-500/10 rounded-sm border border-cathedral-500/20">
-                  <TrendingUp className="w-8 h-8 text-cathedral-500" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl font-black tracking-tighter uppercase italic line-clamp-1">
-                      {repository?.owner}/{repository?.name}
-                    </h1>
-                    <span className="bg-cathedral-500/10 text-cathedral-400 border border-cathedral-500/20 px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-widest shrink-0">
-                      {tokenInfo?.symbol || '...'}
-                    </span>
-                    {repository?.isFork && (
-                      <span className="flex items-center gap-1 text-[9px] font-bold text-amber-500/80 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded uppercase tracking-widest">
-                        <GitFork size={10} />
-                        Fork
+          <div className="border-b border-border bg-[color:var(--bg-surface)] px-6 py-4">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+              <div className="min-w-0 flex-1 space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="border border-border bg-[color:var(--bg-page)] p-3">
+                    <TrendingUp className="h-7 w-7 text-[color:var(--fg-strong)]" />
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h1 className="truncate text-[28px] font-semibold uppercase tracking-tight text-[color:var(--fg-strong)]">
+                        {repository?.owner}/{repository?.name}
+                      </h1>
+                      <span className="shrink-0 border border-border bg-[color:var(--bg-page)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+                        {tokenInfo?.symbol || '...'}
                       </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground/80 font-medium max-w-2xl line-clamp-2 uppercase tracking-tight">
-                    {poolInfo?.description || repository?.description || "Initializing decentralized repository sponsorship protocol..."}
-                  </p>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                    <span>by</span>
-                    <div className="flex items-center gap-1.5 px-1.5 py-0.5 bg-secondary/30 rounded border border-border/50 text-foreground">
-                      <Github size={10} className="text-cathedral-400" />
-                      {repository?.owner}
+                      {repository?.isFork && (
+                        <span className="flex items-center gap-1 border border-border bg-[color:var(--bg-page)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+                          <GitFork size={10} />
+                          Fork
+                        </span>
+                      )}
                     </div>
-                    {repository?.followers && (
-                      <>
-                        <span className="opacity-30">•</span>
-                        <span>{formatNumber(repository.followers)} followers</span>
-                      </>
-                    )}
+                    <p className="line-clamp-1 text-[12px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                      {poolInfo?.description || repository?.description || (language === 'zh' ? "初始化公共代码库资助协议..." : "Initializing decentralized repository sponsorship protocol...")}
+                    </p>
                   </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span>{language === 'zh' ? '仓库方' : 'Owner'}</span>
+                    <span className="inline-flex items-center gap-1 border border-border bg-[color:var(--bg-page)] px-2 py-1 text-[color:var(--fg-strong)]">
+                      <Github size={10} className="text-[color:var(--fg-strong)]" />
+                      {repository?.owner}
+                    </span>
+                    {repository?.followers ? (
+                      <span className="text-[color:var(--fg-muted)]">{formatNumber(repository.followers)} {language === 'zh' ? '关注者' : 'followers'}</span>
+                    ) : null}
+                  </div>
+                  <button className="flex items-center gap-2 transition-colors hover:text-[color:var(--fg-strong)]" onClick={handleCopyPoolAddress}>
+                    <span>CA</span>
+                    <span className="font-mono text-[color:var(--fg-strong)]">
+                      {poolInfo?.pool ? `${poolInfo.pool.slice(0, 8)}...${poolInfo.pool.slice(-8)}` : (language === 'zh' ? "等待发行" : "GENESIS_PENDING")}
+                    </span>
+                    {copiedAddress === 'pool' ? <Check size={12} className="text-[color:var(--success)]" /> : <Copy size={12} />}
+                  </button>
+                  <button className="flex items-center gap-2 transition-colors hover:text-[color:var(--fg-strong)]" onClick={handleCopyCreatorAddress}>
+                    <span>{language === 'zh' ? '创建者' : 'Creator'}</span>
+                    <span className="font-mono text-[color:var(--fg-strong)]">
+                      {poolInfo?.creator ? `${poolInfo.creator.slice(0, 8)}...${poolInfo.creator.slice(-8)}` : (language === 'zh' ? "匿名" : "ANONYMOUS")}
+                    </span>
+                    {copiedAddress === 'creator' ? <Check size={12} className="text-[color:var(--success)]" /> : <Copy size={12} />}
+                  </button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-start">
                 <a
                   href={`https://github.com/${repository?.owner}/${repository?.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-gray-200 transition-all"
+                  className="inline-flex h-11 items-center gap-2 border border-border bg-[color:var(--bg-page)] px-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--fg-strong)] transition-colors hover:bg-[color:var(--bg-muted)]"
                 >
-                  <Github size={14} />
-                  View on GitHub
+                  <Github size={13} />
+                  {language === 'zh' ? '查看 GitHub' : 'View on GitHub'}
                 </a>
               </div>
             </div>
 
-            {/* Trust Bar: Addresses & Stats */}
-            <div className="pt-2 flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
-                <div className="flex items-center gap-2 group cursor-pointer" onClick={handleCopyPoolAddress}>
-                  <span className="text-muted-foreground/60">CA:</span>
-                  <span className="font-mono text-foreground hover:text-cathedral-400 transition-colors">
-                    {poolInfo?.pool ? `${poolInfo.pool.slice(0, 8)}...${poolInfo.pool.slice(-8)}` : "GENESIS_PENDING"}
-                  </span>
-                  {copiedAddress === 'pool' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} className="text-muted-foreground/40 group-hover:text-foreground" />}
-                </div>
-                <div className="flex items-center gap-2 group cursor-pointer" onClick={handleCopyCreatorAddress}>
-                  <span className="text-muted-foreground/60">Creator:</span>
-                  <span className="font-mono text-foreground hover:text-cathedral-400 transition-colors">
-                    {poolInfo?.creator ? `${poolInfo.creator.slice(0, 8)}...${poolInfo.creator.slice(-8)}` : "ANONYMOUS"}
-                  </span>
-                  {copiedAddress === 'creator' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} className="text-muted-foreground/40 group-hover:text-foreground" />}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border/20 border border-border/20">
-                {[
-                  { label: t('repository.stats.stars'), value: formatNumber(repository?.stars || 0), icon: Star, color: 'text-yellow-500' },
-                  { label: t('repository.stats.forks'), value: formatNumber(repository?.forks || 0), icon: GitFork, color: 'text-blue-500' },
-                  { label: t('repository.stats.market_cap'), value: formatNumber((poolOverview?.totalSupply || 0) * price), unit: 'SOL', icon: DollarSign, color: 'text-emerald-500' },
-                  { label: t('repository.stats.price'), value: formatPrice(price), unit: 'SOL', icon: TrendingUp, color: 'text-cathedral-400' },
-                ].map((m, i) => (
-                  <div key={i} className="bg-background/40 p-3 space-y-1 hover:bg-white/[0.02] transition-colors">
-                    <div className="flex items-center gap-1.5 text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em]">
-                      <m.icon size={10} className={m.color} />
-                      {m.label}
-                    </div>
-                    <div className="text-base font-black italic tracking-tighter text-foreground leading-none">
-                      {m.value}
-                      {m.unit && <span className="text-[8px] ml-1 opacity-40 not-italic font-bold">{m.unit}</span>}
-                    </div>
+            <div className="mt-4 grid grid-cols-2 gap-px border border-border bg-border/20 sm:grid-cols-4">
+              {[
+                { label: t('repository.stats.stars'), value: formatNumber(repository?.stars || 0), icon: Star, color: 'text-[color:var(--fg-strong)]' },
+                { label: t('repository.stats.forks'), value: formatNumber(repository?.forks || 0), icon: GitFork, color: 'text-[color:var(--fg-strong)]' },
+                { label: t('repository.stats.market_cap'), value: formatNumber((poolOverview?.totalSupply || 0) * price), unit: 'SOL', icon: DollarSign, color: 'text-[color:var(--success)]' },
+                { label: t('repository.stats.price'), value: formatPrice(price), unit: 'SOL', icon: TrendingUp, color: 'text-[color:var(--fg-strong)]' },
+              ].map((m, i) => (
+                <div key={i} className="bg-[color:var(--bg-page)] px-4 py-3">
+                  <div className="mb-2 flex items-center gap-1.5 text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    <m.icon size={10} className={m.color} />
+                    {m.label}
                   </div>
-                ))}
-              </div>
+                  <div className="text-[28px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">
+                    {m.value}
+                    {m.unit && <span className="ml-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">{m.unit}</span>}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Chart Area: Fixed height to prevent stretching */}
-          <div className="h-[500px] border-b border-border bg-background flex-shrink-0">
+          <div className="flex-shrink-0 border-b border-border bg-[color:var(--bg-page)] px-4 py-4">
             {poolInfo && tokenInfo ? (
               <AdvancedTradingChart
                 poolAddress={poolInfo.pool}
                 tokenSymbol={tokenInfo.symbol}
                 marketCap={price * (poolOverview?.totalSupply ?? 0)}
                 theme="dark"
-                height={500}
+                height={520}
               />
             ) : (
               <div className="h-full flex items-center justify-center text-muted-foreground uppercase text-xs tracking-widest">
-                Loading price data...
+                {language === 'zh' ? '正在加载价格数据...' : 'Loading price data...'}
               </div>
             )}
           </div>
 
           {/* Bottom Tabs Area: Flex-1 fills the remaining gap */}
-          <div className="flex flex-col bg-card/10">
-            <div className="flex bg-secondary/10 px-4 border-b border-border">
+          <div className="flex flex-col bg-[color:var(--bg-surface)]">
+            <div className="relative z-10 flex bg-[color:var(--bg-surface)] px-4 border-b border-border">
               {[
                 { key: 'trades', label: t('repository.tabs.trades') },
                 { key: 'grant', label: t('repository.tabs.grant') },
@@ -578,8 +577,8 @@ export default function Repository({ params }: { params: { id: string } }) {
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as any)}
                   className={cn(
-                    "px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-colors border-b-2",
-                    activeTab === tab.key ? "border-cathedral-500 text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                    "px-4 py-3 text-[10px] uppercase font-bold tracking-widest transition-colors border-b",
+                    activeTab === tab.key ? "border-[color:var(--fg-strong)] text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {tab.label}
@@ -601,18 +600,20 @@ export default function Repository({ params }: { params: { id: string } }) {
                   </thead>
                   <tbody>
                     {orders.map((order) => (
-                      <tr key={order.id} className="hover:bg-secondary/10 transition-colors group">
-                        <td className="py-1 font-mono text-muted-foreground/80">
-                          {order.user ? `${order.user.slice(0, 4)}...${order.user.slice(-4)}` : "unknown"}
+                      <tr key={order.id} className="hover:bg-[color:var(--bg-muted)] transition-colors group">
+                        <td className="py-1 font-mono text-muted-foreground">
+                          {order.user ? `${order.user.slice(0, 4)}...${order.user.slice(-4)}` : (language === 'zh' ? "未知" : "unknown")}
                         </td>
-                        <td className={cn("py-1 font-bold", order.side === 'buy' ? "text-emerald-500" : "text-rose-500")}>
-                          {order.side.toUpperCase()}
+                        <td className={cn("py-1 font-bold", order.side === 'buy' ? "text-[color:var(--success)]" : "text-[color:var(--danger)]")}>
+                          {language === 'zh'
+                            ? order.side === 'buy' ? '买入' : '卖出'
+                            : order.side.toUpperCase()}
                         </td>
                         <td className="py-1 text-right font-mono">{(order.price / LAMPORTS_PER_SOL).toFixed(6)}</td>
                         <td className="py-1 text-right font-mono">{(order.amount / LAMPORTS_PER_SOL).toFixed(4)}</td>
                         <td className="py-1 text-right font-mono">{(order.price * order.amount / (LAMPORTS_PER_SOL * LAMPORTS_PER_SOL)).toFixed(4)}</td>
-                        <td className="py-1 text-right text-muted-foreground/60 text-[10px]">
-                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                        <td className="py-1 text-right text-muted-foreground text-[10px]">
+                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale })}
                         </td>
                       </tr>
                     ))}
@@ -621,15 +622,15 @@ export default function Repository({ params }: { params: { id: string } }) {
               )}
               {activeTab === 'grant' && poolInfo && (
                 <div className="space-y-6">
-                  <div className="bg-cathedral-500/5 border border-cathedral-500/20 rounded p-4 mb-4">
+                  <div className="mb-4 border border-border bg-[color:var(--bg-muted)] p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle size={14} className="text-cathedral-400" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-cathedral-400">{t('repository.grant_panel.funding_mechanics_title')}</span>
+                      <AlertCircle size={14} className="text-[color:var(--fg-strong)]" />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-[color:var(--fg-strong)]">{t('repository.grant_panel.funding_mechanics_title')}</span>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
                       {t('repository.grant_panel.funding_mechanics_description_part1')}
-                      <span className="text-foreground mx-1">2%</span> {t('repository.grant_panel.funding_mechanics_description_part2')}
-                      <span className="text-foreground mx-1">5%</span> {t('repository.grant_panel.funding_mechanics_description_part3')}
+                      <span className="mx-1 text-foreground">2%</span> {t('repository.grant_panel.funding_mechanics_description_part2')}
+                      <span className="mx-1 text-foreground">5%</span> {t('repository.grant_panel.funding_mechanics_description_part3')}
                     </p>
                   </div>
                   <FeeDistribution
@@ -648,11 +649,11 @@ export default function Repository({ params }: { params: { id: string } }) {
                       { label: t('repository.overview_stats.total_volume'), value: formatNumber(poolOverview?.totalVolume || 0), unit: 'SOL' },
                       { label: t('repository.overview_stats.market_cap'), value: formatNumber((poolOverview?.totalSupply || 0) * price), unit: 'SOL' },
                     ].map((m, i) => (
-                      <div key={i} className="bg-background p-4">
-                        <div className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1.5">{m.label}</div>
-                        <div className="text-xl font-black italic tracking-tighter text-foreground leading-none">
+                      <div key={i} className="bg-[color:var(--bg-page)] p-4">
+                        <div className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold mb-1.5">{m.label}</div>
+                        <div className="text-xl font-semibold  tracking-tighter text-foreground leading-none">
                           {m.value}
-                          <span className="text-[9px] ml-1.5 opacity-40 not-italic font-bold">{m.unit}</span>
+                          <span className="text-[9px] ml-1.5 opacity-40 font-bold">{m.unit}</span>
                         </div>
                       </div>
                     ))}
@@ -660,32 +661,32 @@ export default function Repository({ params }: { params: { id: string } }) {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <h4 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-1">{t('repository.overview_sections.technical_stack')}</h4>
+                      <h4 className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-1">{t('repository.overview_sections.technical_stack')}</h4>
                       <div className="flex flex-wrap gap-2">
                         {repository?.language && (
-                          <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20 rounded-sm">
+                          <span className="border border-border bg-[color:var(--bg-muted)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--fg-strong)]">
                             {repository.language.toUpperCase()}
                           </span>
                         )}
-                        <span className="px-2 py-0.5 bg-secondary/30 text-muted-foreground text-[10px] font-bold border border-border/40 rounded-sm uppercase">
+                        <span className="border border-border/40 bg-[color:var(--bg-muted)] px-2 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">
                           Git-Core
                         </span>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-1">{t('repository.overview_sections.activity_index')}</h4>
+                      <h4 className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-1">{t('repository.overview_sections.activity_index')}</h4>
                       <div className="flex items-center gap-4 text-[11px]">
                         <div className="flex items-center gap-1.5">
-                          <Star size={10} className="text-orange-500" />
+                          <Star size={10} className="text-[color:var(--fg-strong)]" />
                           <span className="font-bold">{repository?.stargazersCount || 0}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <GitFork size={10} className="text-blue-500" />
+                          <GitFork size={10} className="text-[color:var(--fg-strong)]" />
                           <span className="font-bold">{repository?.forksCount || 0}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Activity size={10} className="text-emerald-500" />
-                          <span className="text-muted-foreground">ACTIVE</span>
+                          <Activity size={10} className="text-[color:var(--success)]" />
+                          <span className="text-muted-foreground">{language === 'zh' ? '活跃' : 'ACTIVE'}</span>
                         </div>
                       </div>
                     </div>
@@ -694,8 +695,8 @@ export default function Repository({ params }: { params: { id: string } }) {
               )}
               {activeTab === 'ai-chat' && (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-                  <div className="w-12 h-12 bg-cathedral-500/10 rounded-full flex items-center justify-center">
-                    <Bot className="w-6 h-6 text-cathedral-500" />
+                  <div className="flex h-12 w-12 items-center justify-center bg-[color:var(--bg-muted)]">
+                    <Bot className="w-6 h-6 text-[color:var(--fg-strong)]" />
                   </div>
                   <div className="max-w-xs space-y-1">
                     <p className="text-xs font-bold uppercase tracking-wider">{t('repository.ai_chat.analysis_ready')}</p>
@@ -704,7 +705,7 @@ export default function Repository({ params }: { params: { id: string } }) {
                   <Button
                     size="sm"
                     onClick={() => setIsAIChatOpen(true)}
-                    className="bg-cathedral-600 hover:bg-cathedral-700 text-white text-[10px] uppercase font-black"
+                    className="bg-primary text-primary-foreground hover:opacity-90 text-[10px] uppercase font-semibold tracking-[0.18em]"
                   >
                     {t('repository.ai_chat.launch_analyst')}
                   </Button>
@@ -715,32 +716,35 @@ export default function Repository({ params }: { params: { id: string } }) {
         </div>
 
         {/* Right Column: Execution Panel */}
-        <div className="flex flex-col bg-card border-l border-border w-full lg:w-[320px] xl:w-[380px]">
-          <div className="p-4 border-b border-border bg-secondary/10 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('repository.trade_panel.execution')}</span>
+        <div className="flex w-full flex-col border-l border-border bg-[color:var(--bg-page)] lg:w-[320px] xl:w-[360px]">
+          <div className="flex items-center justify-between border-b border-border bg-[color:var(--bg-surface)] px-4 py-3">
+            <div className="space-y-1">
+              <span className="block text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">{t('repository.trade_panel.execution')}</span>
+              <span className="block text-[11px] uppercase tracking-[0.16em] text-[color:var(--fg-strong)]">
+                {isBuying ? t('repository.trade_panel.confirm_buy') : t('repository.trade_panel.confirm_sell')}
+              </span>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 border border-border bg-[color:var(--bg-page)] p-1">
               <button
                 onClick={() => setIsBuying(true)}
-                className={cn("px-3 py-1 text-[10px] uppercase font-bold rounded-sm transition-all", isBuying ? "bg-emerald-600 text-white" : "bg-secondary text-muted-foreground")}
+                className={cn("px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors", isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-[color:var(--fg-strong)]")}
               >
                 {t('repository.trade_panel.buy')}
               </button>
               <button
                 onClick={() => setIsBuying(false)}
-                className={cn("px-3 py-1 text-[10px] uppercase font-bold rounded-sm transition-all", !isBuying ? "bg-rose-600 text-white" : "bg-secondary text-muted-foreground")}
+                className={cn("px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors", !isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-[color:var(--fg-strong)]")}
               >
                 {t('repository.trade_panel.sell')}
               </button>
             </div>
           </div>
 
-          <div className="p-4 space-y-8">
-            <div className="space-y-4">
-              <div className="flex justify-between items-end mb-1">
-                <label className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">{t('repository.trade_panel.amount')}</label>
-                <span className="text-[10px] text-cathedral-400 font-bold uppercase tracking-widest bg-cathedral-500/5 px-1.5 rounded">
+          <div className="flex flex-col gap-8 p-4">
+            <div className="space-y-4 border border-border bg-[color:var(--bg-surface)] p-4">
+              <div className="flex items-end justify-between gap-3">
+                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{t('repository.trade_panel.amount')}</label>
+                <span className="border border-border bg-[color:var(--bg-page)] px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-[color:var(--fg-strong)]">
                   {isBuying ? t('repository.trade_panel.sponsoring') : t('repository.trade_panel.liquidating')}
                 </span>
               </div>
@@ -749,18 +753,18 @@ export default function Repository({ params }: { params: { id: string } }) {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value) || 0)}
-                  className="bg-secondary/20 border-border/50 rounded-sm font-mono text-lg h-14 focus:ring-1 focus:ring-emerald-500/30 transition-all text-center"
+                  className="h-16 border-border bg-[color:var(--bg-page)] text-center font-mono text-[32px] tracking-tight text-[color:var(--fg-strong)] focus:ring-1 focus:ring-ring"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
-                  Shares
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {language === 'zh' ? '份额' : 'Shares'}
                 </span>
               </div>
-              <div className="grid grid-cols-4 gap-1">
+              <div className="grid grid-cols-4 gap-2">
                 {[0.1, 0.5, 1, 5].map((val) => (
                   <button
                     key={val}
                     onClick={() => handleQuickAmount(val)}
-                    className="py-1 bg-secondary hover:bg-secondary/80 text-[10px] font-bold rounded-sm border border-border"
+                    className="border border-border bg-[color:var(--bg-page)] py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--fg-strong)] transition-colors hover:bg-[color:var(--bg-muted)]"
                   >
                     {val}
                   </button>
@@ -768,19 +772,19 @@ export default function Repository({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            <div className="p-4 bg-secondary/5 rounded-sm border border-border/30 space-y-4 backdrop-blur-sm">
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                <span className="text-muted-foreground/60">{t('repository.trade_panel.balance')}</span>
-                <span className="font-mono text-foreground/80">
+            <div className="space-y-4 border border-border bg-[color:var(--bg-surface)] p-4">
+              <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em]">
+                <span className="text-muted-foreground">{t('repository.trade_panel.balance')}</span>
+                <span className="font-mono text-[color:var(--fg-strong)]">
                   {isBuying
                     ? solBalance.toFixed(4) + ' SOL'
-                    : balance.toFixed(4) + ' Shares'}
+                    : balance.toFixed(4) + ` ${language === 'zh' ? '份额' : 'Shares'}`}
                 </span>
               </div>
-              <div className="h-px border-t border-border/50" />
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                <span className="text-muted-foreground/60">{isBuying ? t('repository.trade_panel.estimated_cost') : t('repository.trade_panel.estimated_return')}</span>
-                <span className="font-mono text-cathedral-400">
+              <div className="h-px border-t border-border" />
+              <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em]">
+                <span className="text-muted-foreground">{isBuying ? t('repository.trade_panel.estimated_cost') : t('repository.trade_panel.estimated_return')}</span>
+                <span className="font-mono text-[20px] tracking-tight text-[color:var(--fg-strong)]">
                   {estimatedPrice && Number(estimatedPrice) !== 0
                     ? Number(estimatedPrice).toFixed(6) + ' SOL'
                     : '0.00'}
@@ -792,34 +796,36 @@ export default function Repository({ params }: { params: { id: string } }) {
               onClick={isBuying ? handleBuy : handleSell}
               disabled={isLoading || amount <= 0}
               className={cn(
-                "w-full h-14 rounded-sm text-sm font-black uppercase tracking-widest transition-all",
-                isBuying ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-rose-600 hover:bg-rose-700 text-white"
+                "h-14 w-full text-sm font-semibold uppercase tracking-[0.24em] transition-colors",
+                isLoading || amount <= 0
+                  ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-muted)]"
+                  : "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)] hover:opacity-92"
               )}
             >
               {isLoading ? t('repository.trade_panel.executing') : (isBuying ? t('repository.trade_panel.confirm_buy') : t('repository.trade_panel.confirm_sell'))}
             </Button>
 
             {/* User Portfolio in this Token */}
-            <div className="pt-4 border-t border-border/40">
-              <div className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                <Wallet className="w-3 h-3 text-cathedral-400" />
+            <div className="border-t border-border pt-4">
+              <div className="mb-3 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <Wallet className="w-3 h-3 text-[color:var(--fg-strong)]" />
                 {t('repository.trade_panel.your_position')}
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-secondary/10 border border-border/20 p-3 rounded-sm">
-                  <div className="text-[8px] text-muted-foreground uppercase mb-1 font-black">{t('repository.trade_panel.holdings')}</div>
-                  <div className="text-lg font-black italic tracking-tighter leading-none">{balance.toFixed(4)}</div>
+                <div className="border border-border bg-[color:var(--bg-surface)] p-3">
+                  <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('repository.trade_panel.holdings')}</div>
+                  <div className="text-[26px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">{balance.toFixed(4)}</div>
                 </div>
-                <div className="bg-secondary/10 border border-border/20 p-3 rounded-sm">
-                  <div className="text-[8px] text-muted-foreground uppercase mb-1 font-black">{t('repository.trade_panel.value')} (SOL)</div>
-                  <div className="text-lg font-black italic tracking-tighter text-cathedral-400 leading-none">{(balance * price).toFixed(4)}</div>
+                <div className="border border-border bg-[color:var(--bg-surface)] p-3">
+                  <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('repository.trade_panel.value')} (SOL)</div>
+                  <div className="text-[26px] font-semibold leading-none tracking-tight text-[color:var(--fg-strong)]">{(balance * price).toFixed(4)}</div>
                 </div>
               </div>
             </div>
 
             {/* Holders List */}
             {poolInfo && (
-              <div className="pt-4 border-t border-border/40">
+              <div className="border-t border-border pt-4">
                 <Holders poolAddress={poolInfo.pool} limit={5} />
               </div>
             )}
@@ -838,32 +844,38 @@ export default function Repository({ params }: { params: { id: string } }) {
 
       {/* Mobile Trading Overlay */}
       {isMobileTradingExpanded && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col pt-12 overflow-hidden animate-in slide-in-from-bottom duration-300">
-          <div className="px-6 flex justify-between items-center mb-8">
-            <span className="text-xs font-black uppercase tracking-[0.2em]">Fast Execution</span>
-            <button onClick={() => setIsMobileTradingExpanded(false)} className="text-muted-foreground hover:text-white uppercase text-[10px] tracking-widest">Close [X]</button>
+        <div className="lg:hidden fixed inset-0 z-50 bg-[color:rgba(17,17,17,0.92)] backdrop-blur-md flex flex-col pt-12 overflow-hidden animate-in slide-in-from-bottom duration-300">
+          <div className="mb-8 flex items-center justify-between px-6">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em]">{t('repository.trade_panel.execution')}</span>
+            <button onClick={() => setIsMobileTradingExpanded(false)} className="text-muted-foreground hover:text-foreground uppercase text-[10px] tracking-widest">{language === 'zh' ? '关闭 [X]' : 'Close [X]'}</button>
           </div>
           <div className="flex-1 px-4 space-y-8">
-            <div className="p-6 terminal-card space-y-4">
-              <div className="flex gap-1 h-12">
-                <button onClick={() => setIsBuying(true)} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all", isBuying ? "bg-emerald-600 text-white" : "bg-secondary text-muted-foreground")}>BUY</button>
-                <button onClick={() => setIsBuying(false)} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all", !isBuying ? "bg-rose-600 text-white" : "bg-secondary text-muted-foreground")}>SELL</button>
+            <div className="p-6 cathedral-panel space-y-4">
+              <div className="flex gap-1 border border-border bg-[color:var(--bg-page)] p-1 h-12">
+                <button onClick={() => setIsBuying(true)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground")}>{t('repository.trade_panel.buy')}</button>
+                <button onClick={() => setIsBuying(false)} className={cn("flex-1 text-[10px] font-semibold uppercase tracking-widest transition-colors", !isBuying ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground")}>{t('repository.trade_panel.sell')}</button>
               </div>
               <div className="relative">
-                <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} className="bg-secondary/20 h-16 text-2xl font-mono border-none pr-16" />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">
-                  Shares
+                <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} className="bg-[color:var(--bg-page)] h-16 text-2xl font-mono border border-border pr-16" />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                  {language === 'zh' ? '份额' : 'Shares'}
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-1">
-                {[0.1, 0.5, 1, 5].map(v => <button key={v} onClick={() => handleQuickAmount(v)} className="py-3 bg-secondary rounded-sm text-[10px] font-bold">{v}</button>)}
+                {[0.1, 0.5, 1, 5].map(v => <button key={v} onClick={() => handleQuickAmount(v)} className="border border-border py-3 bg-[color:var(--bg-page)] text-[10px] font-semibold">{v}</button>)}
               </div>
             </div>
             <Button
               onClick={isBuying ? handleBuy : handleSell}
-              className={cn("w-full h-20 text-lg font-black uppercase tracking-[0.3em]", isBuying ? "bg-emerald-600" : "bg-rose-600")}
+              disabled={isLoading || amount <= 0}
+              className={cn(
+                "w-full h-20 text-lg font-semibold uppercase tracking-[0.3em]",
+                isLoading || amount <= 0
+                  ? "border border-border bg-[color:var(--bg-muted)] text-[color:var(--fg-muted)]"
+                  : "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)] hover:opacity-90"
+              )}
             >
-              Confirm
+              {isLoading ? t('repository.trade_panel.executing') : (isBuying ? t('repository.trade_panel.confirm_buy') : t('repository.trade_panel.confirm_sell'))}
             </Button>
           </div>
         </div>

@@ -98,7 +98,7 @@ export default function CreateCoin() {
   const [boundWallet, setBoundWallet] = useState<string | null>(null);
   const [isBindingWallet, setIsBindingWallet] = useState(false);
   const [walletMismatch, setWalletMismatch] = useState(false);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt_token');
@@ -241,51 +241,50 @@ export default function CreateCoin() {
   };
 
   return (
-    <div className="min-h-full bg-background text-foreground font-mono selection:bg-cathedral-500/30">
+    <div className="cathedral-shell min-h-full text-foreground">
       <Header />
 
-      <main className="max-w-[1400px] mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-10">
-
+      <main className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-12">
         {/* Left Column: Documentation & Status */}
         <div className="lg:col-span-4 space-y-8 order-2 lg:order-1">
-          <div className="terminal-card p-6 bg-secondary/5 border-cathedral-500/20">
+          <div className="cathedral-panel p-6">
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
-              <Terminal className="w-4 h-4 text-cathedral-400" />
-              <h2 className="text-xs font-black uppercase tracking-[0.2em]">{t('launch.deployment_protocol.title')}</h2>
+              <Terminal className="w-4 h-4 text-[color:var(--fg-strong)]" />
+              <h2 className="text-xs font-semibold uppercase tracking-[0.2em]">{t('launch.deployment_protocol.title')}</h2>
             </div>
             <div className="space-y-6 text-[11px] leading-relaxed text-muted-foreground uppercase tracking-tight">
               <div className="flex gap-4">
-                <span className="text-cathedral-500 font-bold shrink-0">01.</span>
+                <span className="text-[color:var(--fg-strong)] font-semibold shrink-0">01.</span>
                 <p>{t('launch.deployment_protocol.step1')}</p>
               </div>
               <div className="flex gap-4">
-                <span className="text-cathedral-500 font-bold shrink-0">02.</span>
+                <span className="text-[color:var(--fg-strong)] font-semibold shrink-0">02.</span>
                 <p>{t('launch.deployment_protocol.step2')}</p>
               </div>
               <div className="flex gap-4">
-                <span className="text-cathedral-500 font-bold shrink-0">03.</span>
+                <span className="text-[color:var(--fg-strong)] font-semibold shrink-0">03.</span>
                 <p>{t('launch.deployment_protocol.step3')}</p>
               </div>
-              <div className="flex gap-4 border-t border-border pt-6 text-amber-500/80">
+              <div className="flex gap-4 border-t border-border pt-6 text-[color:var(--danger)]">
                 <AlertCircle className="w-5 h-5 shrink-0" />
-                <p className="normal-case italic">{t('launch.deployment_protocol.alert')}</p>
+                <p className="normal-case">{t('launch.deployment_protocol.alert')}</p>
               </div>
             </div>
           </div>
 
-          <div className="terminal-card p-6 border-white/5 bg-white/[0.02]">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">{t('launch.network_status.title')}</h3>
+          <div className="cathedral-panel p-6">
+            <h3 className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">{t('launch.network_status.title')}</h3>
             <div className="space-y-4">
-              <div className="flex justify-between items-center bg-black/20 p-3 rounded-sm">
+              <div className="flex items-center justify-between bg-[color:var(--bg-muted)] p-3">
                 <span className="text-[10px] uppercase">Solana Devnet</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="text-[10px] text-amber-500 font-bold">{t('launch.network_status.online')}</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--danger)] animate-pulse" />
+                  <span className="text-[10px] text-[color:var(--danger)] font-bold">{t('launch.network_status.online')}</span>
                 </div>
               </div>
-              <div className="flex justify-between items-center bg-black/20 p-3 rounded-sm">
+              <div className="flex items-center justify-between bg-[color:var(--bg-muted)] p-3">
                 <span className="text-[10px] uppercase">Protocol V0.0.1</span>
-                <span className="text-[10px] text-cathedral-400 font-bold">{t('launch.network_status.active')}</span>
+                <span className="text-[10px] text-[color:var(--fg-strong)] font-bold">{t('launch.network_status.active')}</span>
               </div>
             </div>
           </div>
@@ -295,10 +294,10 @@ export default function CreateCoin() {
         <div className="lg:col-span-8 order-1 lg:order-2 space-y-6">
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-cathedral-500/10 rounded-sm border border-cathedral-500/20">
-                <Rocket className="w-6 h-6 text-cathedral-500" />
+              <div className="border border-border bg-[color:var(--bg-muted)] p-2">
+                <Rocket className="w-6 h-6 text-[color:var(--fg-strong)]" />
               </div>
-              <h1 className="text-3xl font-black tracking-tighter uppercase italic">{t('launch.title')}</h1>
+              <h1 className="text-3xl font-semibold tracking-tighter uppercase">{t('launch.title')}</h1>
             </div>
             <p className="text-muted-foreground text-sm uppercase tracking-wider font-medium">{t('launch.subtitle')}</p>
           </div>
@@ -306,38 +305,38 @@ export default function CreateCoin() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Step 1: Repository Discovery */}
             <div className="terminal-card overflow-hidden">
-              <div className="px-6 py-4 bg-secondary/30 border-b border-border flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-border bg-[color:var(--bg-muted)] px-6 py-4">
                 <div className="flex items-center gap-2">
                   <Github className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">{t('launch.select_repo')}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest">{t('launch.select_repo')}</span>
                 </div>
                 <div className="relative w-48">
-                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                  <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={t('launch.scan_placeholder')}
-                    className="h-7 bg-black/40 border-none text-[10px] pl-7 focus:ring-1 focus:ring-cathedral-500/30"
+                    className="h-7 bg-[color:var(--bg-surface)] border-none text-[10px] pl-7 focus:ring-1 focus:ring-ring"
                   />
                 </div>
               </div>
 
-              <ScrollArea className="h-[300px] bg-black/20">
+              <ScrollArea className="h-[300px] bg-[color:var(--bg-muted)]">
                 <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-2">
                   {filteredRepositories.map((repo, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleImport(repo)}
                       className={cn(
-                        "p-4 rounded-sm border transition-all cursor-pointer group",
+                        "p-4  border transition-all cursor-pointer group",
                         selectedRepo === repo.name
-                          ? "bg-cathedral-500/10 border-cathedral-500/50"
-                          : "bg-white/[0.02] border-white/5 hover:border-white/20"
+                          ? "bg-[color:var(--bg-muted)] border-[color:var(--fg-strong)]"
+                          : "bg-[color:var(--bg-surface)] border-border hover:bg-[color:var(--bg-muted)] hover:border-[color:var(--fg-strong)]"
                       )}
                     >
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
-                          <div className="text-sm font-bold truncate max-w-[200px] group-hover:text-cathedral-400 transition-colors">
+                          <div className="text-sm font-semibold truncate max-w-[200px] group-hover:text-[color:var(--fg-strong)] transition-colors">
                             {repo.name}
                           </div>
                           <div className="text-[9px] text-muted-foreground uppercase">
@@ -345,7 +344,7 @@ export default function CreateCoin() {
                           </div>
                         </div>
                         {selectedRepo === repo.name && (
-                          <div className="w-4 h-4 bg-cathedral-500 rounded-full flex items-center justify-center">
+                          <div className="flex h-4 w-4 items-center justify-center bg-primary">
                             <Plus className="w-3 h-3 text-white rotate-45" />
                           </div>
                         )}
@@ -367,39 +366,39 @@ export default function CreateCoin() {
                 <div className="terminal-card p-6 space-y-6">
                   <div className="flex items-center gap-2 border-b border-border pb-4">
                     <FileText className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('launch.genesis_config')}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{t('launch.genesis_config')}</span>
                   </div>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase text-muted-foreground">{t('launch.ticker')}</label>
+                        <label className="text-[9px] font-semibold uppercase text-muted-foreground">{t('launch.ticker')}</label>
                         <Input
                           value={ticker}
                           onChange={(e) => setTicker(e.target.value)}
                           placeholder="GRT"
-                          className="bg-black/40 border-border/50 font-black italic uppercase placeholder:not-italic"
+                          className="bg-[color:var(--bg-surface)] border-border/50 font-mono uppercase"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase text-muted-foreground">{t('launch.initial_mint')}</label>
+                        <label className="text-[9px] font-semibold uppercase text-muted-foreground">{t('launch.initial_mint')}</label>
                         <Input
                           disabled
                           value="1,000,000,000"
-                          className="bg-black/20 border-white/5 text-muted-foreground/50"
+                          className="bg-[color:var(--bg-muted)] border-border/40 text-[color:var(--fg-muted)]"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase text-muted-foreground">{t('launch.project_brief')}</label>
+                      <label className="text-[9px] font-semibold uppercase text-muted-foreground">{t('launch.project_brief')}</label>
                       <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full h-32 bg-black/40 border border-border/50 rounded-sm p-4 text-xs font-mono focus:border-cathedral-500/50 focus:ring-0 transition-all resize-none"
+                        className="h-32 w-full resize-none border border-border/50 bg-[color:var(--bg-surface)] p-4 text-xs font-mono transition-all focus:border-[color:var(--fg-strong)] focus:ring-0"
                         placeholder={t('launch.define_mission_placeholder')}
                       />
-                      <div className="text-right text-[8px] text-muted-foreground uppercase">{description.length}/80 {t('launch.characters')}</div>
+                      <div className="text-right font-mono text-[8px] uppercase text-[color:var(--fg-muted)]">{description.length}/80 {t('launch.characters')}</div>
                     </div>
                   </div>
                 </div>
@@ -409,24 +408,24 @@ export default function CreateCoin() {
                 <div className="terminal-card p-6 h-full flex flex-col">
                   <div className="flex items-center gap-2 border-b border-border pb-4 mb-6">
                     <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('launch.asset_visual')}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{t('launch.asset_visual')}</span>
                   </div>
 
                   <div className="flex-1 flex flex-col">
                     <input type="file" id="image-upload" className="hidden" onChange={handleImageChange} accept="image/*" />
                     <label
                       htmlFor="image-upload"
-                      className="flex-1 border-2 border-dashed border-border/40 rounded-sm hover:border-cathedral-500/40 transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center bg-black/20"
+                      className="flex-1 border-2 border-dashed border-border/40  hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center bg-[color:var(--bg-muted)]"
                     >
                       {image ? (
                         <div className="space-y-2">
-                          <Activity className="w-8 h-8 text-emerald-500 mx-auto" />
-                          <span className="text-[9px] font-bold uppercase block truncate max-w-[120px]">{image.name}</span>
+                          <Activity className="w-8 h-8 text-[color:var(--success)] mx-auto" />
+                          <span className="block max-w-[120px] truncate text-[9px] font-semibold uppercase">{image.name}</span>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <Cpu className="w-8 h-8 text-muted-foreground/30 mx-auto" />
-                          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">{t('launch.upload_core_icon')}</span>
+                          <Cpu className="mx-auto h-8 w-8 text-[color:var(--fg-muted)]" />
+                          <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">{t('launch.upload_core_icon')}</span>
                         </div>
                       )}
                     </label>
@@ -438,9 +437,9 @@ export default function CreateCoin() {
             {/* Execution Layer */}
             <div className="pt-6">
               {walletMismatch && boundWallet && (
-                <div className="mb-4 bg-rose-500/10 border border-rose-500/20 p-4 rounded-sm flex items-center gap-4">
-                  <AlertCircle className="w-5 h-5 text-rose-500" />
-                  <div className="text-[10px] uppercase font-bold text-rose-500/90 leading-relaxed">
+                <div className="mb-4 flex items-center gap-4 border border-[color:var(--danger)]/30 bg-[color:var(--bg-surface)] p-4">
+                  <AlertCircle className="w-5 h-5 text-[color:var(--danger)]" />
+                  <div className="text-[10px] uppercase font-bold text-[color:var(--danger)]/90 leading-relaxed">
                     {t('launch.identity_mismatch', { wallet: `${boundWallet.slice(0, 6)}...${boundWallet.slice(-6)}` })}
                   </div>
                 </div>
@@ -451,10 +450,10 @@ export default function CreateCoin() {
                   type="button"
                   onClick={handleBindWallet}
                   disabled={!connected || isBindingWallet}
-                  className="w-full h-16 bg-white text-black hover:bg-gray-200 uppercase font-black tracking-[0.3em] flex items-center justify-center gap-3 transition-all rounded-sm"
+                  className="flex h-16 w-full items-center justify-center gap-3 bg-primary text-primary-foreground uppercase tracking-[0.3em] transition-all hover:opacity-90"
                 >
                   {isBindingWallet ? (
-                    <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
                   ) : (
                     <>
                       <Wallet className="w-5 h-5" />
@@ -466,10 +465,10 @@ export default function CreateCoin() {
                 <Button
                   type="submit"
                   disabled={!connected || isLoading || !selectedRepo || walletMismatch}
-                  className="w-full h-16 bg-cathedral-600 hover:bg-cathedral-700 text-white uppercase font-black tracking-[0.3em] flex items-center justify-center gap-3 transition-all rounded-sm disabled:bg-gray-800 disabled:text-gray-500 disabled:shadow-none"
+                  className="flex h-16 w-full items-center justify-center gap-3 bg-primary text-primary-foreground uppercase tracking-[0.3em] transition-all hover:opacity-90 disabled:bg-[color:var(--bg-muted)] disabled:text-[color:var(--fg-muted)] disabled:shadow-none"
                 >
                   {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/25 border-t-white" />
                   ) : (
                     <>
                       <Rocket className="w-5 h-5" />

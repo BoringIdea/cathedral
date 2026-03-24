@@ -1,51 +1,65 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { WalletButton } from "@/components/solana-provider";
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { Home, Check, User, FileText, Github, Menu, Wallet, Terminal, Rocket, BarChart2, BookOpen, Shield } from "lucide-react";
+import { BookOpen, Github, Rocket, TrendingUp, Wallet } from "lucide-react";
 import { apiGet } from "@/lib/api";
-import { ApiResponse } from "@/types/api";
-import { usePathname } from "next/navigation";
-
-import { useTranslation } from '@/lib/i18n-context';
+import type { ApiResponse } from "@/types/api";
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function Header() {
-  const pathname = usePathname();
   const { language, setLanguage, t } = useTranslation();
+  const pathname = usePathname();
   const [githubLogin, setGithubLogin] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [boundWallet, setBoundWallet] = useState<string | null>(null);
 
-  // Dynamic Header Content
-  const getHeaderContent = () => {
-    if (pathname === "/") {
-      return { main: t('header.system'), sub: t('header.markets'), icon: BarChart2 };
+  const sectionMeta = (() => {
+    if (pathname.startsWith("/repository/create")) {
+      return {
+        icon: Rocket,
+        group: language === "zh" ? "交易" : "Trade",
+        label: language === "zh" ? "启动" : "Launch",
+      };
     }
-    if (pathname.includes("/repository/create")) {
-      return { main: t('header.protocol'), sub: t('header.launch'), icon: Rocket };
+    if (pathname.startsWith("/repository/")) {
+      return {
+        icon: TrendingUp,
+        group: language === "zh" ? "交易" : "Trade",
+        label: language === "zh" ? "仓库" : "Repository",
+      };
     }
-    if (pathname.includes("/repository/") && !pathname.includes("/create")) {
-      return { main: t('header.trade'), sub: t('header.repository'), icon: Terminal };
+    if (pathname.startsWith("/litepaper")) {
+      return {
+        icon: BookOpen,
+        group: language === "zh" ? "协议" : "Protocol",
+        label: language === "zh" ? "白皮书" : "Litepaper",
+      };
     }
-    if (pathname.includes("/litepaper")) {
-      return { main: t('header.docs'), sub: t('header.litepaper'), icon: BookOpen };
+    if (pathname.startsWith("/user")) {
+      return {
+        icon: Wallet,
+        group: language === "zh" ? "账户" : "Account",
+        label: language === "zh" ? "资料" : "Profile",
+      };
     }
-    if (pathname.includes("/user")) {
-      return { main: t('header.identity'), sub: t('header.profile'), icon: Shield };
-    }
-    return { main: t('header.system'), sub: t('header.terminal'), icon: Terminal };
-  };
+    return {
+      icon: TrendingUp,
+      group: language === "zh" ? "交易" : "Trade",
+      label: language === "zh" ? "市场" : "Markets",
+    };
+  })();
 
-  const { main, sub, icon: Icon } = getHeaderContent();
+  const SectionIcon = sectionMeta.icon;
 
   useEffect(() => {
     const storedUserName = localStorage.getItem("user_name");
@@ -62,17 +76,14 @@ export default function Header() {
 
   const fetchUserInfo = async (jwt: string) => {
     try {
-      const response: ApiResponse<any> = await apiGet(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`,
-        {
-          'Authorization': `Bearer ${jwt}`
-        }
-      );
+      const response: ApiResponse<any> = await apiGet(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
+        Authorization: `Bearer ${jwt}`,
+      });
       if (response.data) {
         setBoundWallet(response.data.wallet || null);
       }
     } catch (error) {
-      console.error('Failed to fetch user info:', error);
+      console.error("Failed to fetch user info:", error);
     }
   };
 
@@ -86,79 +97,70 @@ export default function Header() {
   };
 
   const login = () => {
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || ""
-      }&redirect_uri=${encodeURIComponent(
-        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI || ""
-      )}&scope=user`;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || ""}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI || "")}&scope=user`;
   };
 
   return (
-    <div className="flex justify-between items-center w-full px-6 h-16 bg-background border-b border-border font-mono sticky top-0 z-50">
-      {/* Left Section: Breadcrumbs or Active Page */}
-      <div className="flex items-center gap-3">
-        <div className="p-1.5 bg-secondary/50 rounded-sm border border-border/50">
-          <Icon size={14} className="text-cathedral-400" />
-        </div>
-        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{main}</span>
-        <div className="h-3 w-px bg-border/50" />
-        <span className="text-xs font-black text-foreground uppercase tracking-wider italic">{sub}</span>
-      </div>
-
-      {/* Right Section: Language Switch & Auth & Wallet */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center p-1 bg-secondary/30 border border-border/50 rounded-sm">
-          <button
-            onClick={() => setLanguage('en')}
-            className={cn(
-              "px-2 py-1 text-[9px] font-black tracking-widest transition-all rounded-sm",
-              language === 'en' ? "bg-white text-black" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            EN
-          </button>
-          <button
-            onClick={() => setLanguage('zh')}
-            className={cn(
-              "px-2 py-1 text-[9px] font-black tracking-widest transition-all rounded-sm",
-              language === 'zh' ? "bg-white text-black" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            中文
-          </button>
+    <header className="sticky top-0 z-50 border-b border-border bg-[color:var(--bg-page)]/95 backdrop-blur">
+      <div className="flex h-[58px] items-center justify-between px-6">
+        <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="flex h-9 w-9 items-center justify-center border border-border bg-[color:var(--bg-surface)]">
+            <SectionIcon className="h-4 w-4 text-[color:var(--fg-muted)]" />
+          </div>
+          <span>{sectionMeta.group}</span>
+          <span className="opacity-40">/</span>
+          <span className="text-[color:var(--fg-strong)]">{sectionMeta.label}</span>
         </div>
 
-        <div className="h-6 w-px bg-border mx-1" />
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="hidden items-center gap-1 border border-border px-1 py-1 md:flex">
+            <button
+              onClick={() => setLanguage("en")}
+              className={cn(
+                "px-2 py-1 text-[10px] uppercase tracking-[0.18em] font-mono transition-colors",
+                language === "en" ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLanguage("zh")}
+              className={cn(
+                "px-2 py-1 text-[10px] uppercase tracking-[0.18em] font-mono transition-colors",
+                language === "zh" ? "bg-[color:var(--fg-strong)] text-[color:var(--bg-page)]" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              中文
+            </button>
+          </div>
 
-        {githubLogin ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 px-3 text-xs font-mono gap-2 border border-border rounded-sm hover:bg-secondary transition-colors">
-                <Github size={14} />
-                {userName}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-background border-border rounded-sm">
-              <div className="px-3 py-2 text-xs text-muted-foreground border-b border-border">
-                {t('header.signed_in_as')} <span className="text-foreground font-semibold">{userName}</span>
-              </div>
-              <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
-                {t('header.logout')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button
-            onClick={login}
-            variant="outline"
-            className="h-9 px-3 text-xs font-mono gap-2 border-border rounded-sm hover:bg-secondary transition-colors"
-          >
-            <Github size={14} />
-            {t('header.login')}
-          </Button>
-        )}
-        <div className="h-6 w-px bg-border mx-1" />
-        <WalletButton />
+          {githubLogin ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 px-3">
+                  <Github size={14} />
+                  {userName}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 border-border bg-[color:var(--bg-surface)]">
+                <div className="border-b border-border px-3 py-2 text-[11px] font-mono text-muted-foreground">
+                  {t("header.signed_in_as")} <span className="text-foreground">{userName}</span>
+                </div>
+                {boundWallet && <div className="border-b border-border px-3 py-2 text-[11px] font-mono text-muted-foreground">{boundWallet}</div>}
+                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
+                  {t("header.logout")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button onClick={login} variant="outline" size="sm" className="gap-2 px-3">
+              <Github size={14} />
+              {t("header.login")}
+            </Button>
+          )}
+          <WalletButton />
+        </div>
       </div>
-    </div>
+    </header>
   );
 }

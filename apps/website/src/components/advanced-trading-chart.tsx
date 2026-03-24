@@ -122,30 +122,31 @@ export default function AdvancedTradingChart({
 
         const containerWidth = chartContainerRef.current.clientWidth;
 
+        const chartChromeHeight = 104;
         const chart = createChart(chartContainerRef.current, {
           layout: {
-            background: { color: '#0A0A0A' },
+            background: { color: '#0B0B0B' },
             textColor: '#D9D9D9',
           },
           grid: {
-            vertLines: { color: '#111', style: 1 },
-            horzLines: { color: '#111', style: 1 },
+            vertLines: { color: 'rgba(255,255,255,0.04)', style: 1 },
+            horzLines: { color: 'rgba(255,255,255,0.04)', style: 1 },
           },
           width: containerWidth,
-          height: height - 120, // Adjusted to reserve space for headers
+          height: Math.max(height - chartChromeHeight, 280),
           timeScale: {
             timeVisible: true,
             secondsVisible: ['1s', '5s', '30s'].includes(selectedTimeframe),
-            borderColor: '#1A1A1A',
+            borderColor: 'rgba(255,255,255,0.08)',
           },
           rightPriceScale: {
-            borderColor: '#1A1A1A',
+            borderColor: 'rgba(255,255,255,0.08)',
             scaleMargins: { top: 0.1, bottom: 0.1 },
           },
           crosshair: {
             mode: 1,
-            vertLine: { width: 1, color: '#333', style: 3 },
-            horzLine: { width: 1, color: '#333', style: 3 },
+            vertLine: { width: 1, color: 'rgba(255,255,255,0.14)', style: 3 },
+            horzLine: { width: 1, color: 'rgba(255,255,255,0.14)', style: 3 },
           },
         });
 
@@ -220,71 +221,69 @@ export default function AdvancedTradingChart({
 
   if (error && !isLoading) {
     return (
-      <div style={{ height: `${height}px`, width }} className="bg-[#0A0A0A] border border-gray-800 flex items-center justify-center">
+      <div style={{ height: `${height}px`, width }} className="flex items-center justify-center border border-border bg-[color:var(--bg-surface)]">
         <div className="text-center">
-          <p className="text-red-400 mb-2">⚠️ {error}</p>
-          <button onClick={() => window.location.reload()} className="text-blue-400 hover:text-blue-300 text-sm underline">{t('chart.retry')}</button>
+          <p className="mb-2 text-[color:var(--danger)]">⚠️ {error}</p>
+          <button onClick={() => window.location.reload()} className="text-sm underline underline-offset-4 text-[color:var(--fg-strong)] hover:text-[color:var(--fg-muted)]">{t('chart.retry')}</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ height: `${height}px` }} className="flex flex-col bg-[#0A0A0A] space-y-2">
-      <div className="p-3 border-b border-gray-800">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <span className="text-lg font-bold text-white">{tokenSymbol}</span>
+    <div style={{ height: `${height}px` }} className="flex flex-col bg-[color:var(--bg-surface)]">
+      <div className="border-b border-border px-4 py-3">
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-end gap-3">
+            <span className="cathedral-h2 text-[24px]">{tokenSymbol}</span>
             {currentPrice !== null && (
               <>
-                <span className="text-lg text-white">{currentPrice.toFixed(currentPrice < 0.001 ? 8 : 6)} SOL</span>
-                <span className={`text-sm font-semibold ${priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <span className="font-mono text-[14px] text-[color:var(--fg-strong)]">{currentPrice.toFixed(currentPrice < 0.001 ? 8 : 6)} SOL</span>
+                <span className={`text-sm font-mono ${priceChange24h >= 0 ? 'text-[color:var(--success)]' : 'text-[color:var(--danger)]'}`}>
                   {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}%
                 </span>
-                {marketCap > 0 && (
-                  <span className="text-xs sm:text-sm text-gray-400">
-                    MC: {marketCap >= 1000000 ? `${(marketCap / 1000000).toFixed(2)}M` : marketCap >= 1000 ? `${(marketCap / 1000).toFixed(2)}K` : marketCap.toFixed(2)} SOL
-                  </span>
-                )}
               </>
             )}
           </div>
-          <button onClick={toggleFullscreen} className="p-1.5 rounded bg-gray-800 text-gray-400 hover:bg-gray-700">
+          <button onClick={toggleFullscreen} className="border border-border bg-[color:var(--bg-page)] p-1.5 text-[color:var(--fg-muted)] hover:text-[color:var(--fg-strong)]">
             <Maximize2 className="w-4 h-4" />
           </button>
         </div>
         {currentOHLC && (
-          <div className="flex items-center gap-4 text-xs font-mono text-gray-400 overflow-x-auto">
-            <span>O <span className="text-white">{currentOHLC.open.toFixed(6)}</span></span>
-            <span>H <span className="text-green-400">{currentOHLC.high.toFixed(6)}</span></span>
-            <span>L <span className="text-red-400">{currentOHLC.low.toFixed(6)}</span></span>
-            <span>C <span className="text-white">{currentOHLC.close.toFixed(6)}</span></span>
+          <div className="flex items-center gap-4 overflow-x-auto text-[11px] font-mono text-[color:var(--fg-muted)]">
+            {marketCap > 0 && (
+              <span>MC <span className="text-[color:var(--fg-strong)]">{marketCap >= 1000000 ? `${(marketCap / 1000000).toFixed(2)}M` : marketCap >= 1000 ? `${(marketCap / 1000).toFixed(2)}K` : marketCap.toFixed(2)} SOL</span></span>
+            )}
+            <span>O <span className="text-[color:var(--fg-strong)]">{currentOHLC.open.toFixed(6)}</span></span>
+            <span>H <span className="text-[color:var(--fg-strong)]">{currentOHLC.high.toFixed(6)}</span></span>
+            <span>L <span className="text-[color:var(--danger)]">{currentOHLC.low.toFixed(6)}</span></span>
+            <span>C <span className="text-[color:var(--fg-strong)]">{currentOHLC.close.toFixed(6)}</span></span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center justify-between px-3 py-1 border-b border-gray-800 overflow-x-auto">
+      <div className="flex items-center justify-between overflow-x-auto border-b border-border px-4 py-2">
         <div className="flex gap-1">
           {timeframes.map((tf) => (
             <button
               key={tf}
               onClick={() => setSelectedTimeframe(tf)}
-              className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-colors ${selectedTimeframe === tf ? 'bg-cathedral-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+              className={`border px-3 py-1 text-[10px] uppercase tracking-[0.16em] transition-colors ${selectedTimeframe === tf ? 'border-border bg-[color:var(--bg-page)] text-[color:var(--fg-strong)]' : 'border-transparent text-[color:var(--fg-muted)] hover:text-[color:var(--fg-strong)]'}`}
             >
               {tf}
             </button>
           ))}
         </div>
-        <div className="hidden sm:flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase">
-          <TrendingUp className="w-3 h-3 text-cathedral-500/50" />
+        <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+          <TrendingUp className="w-3 h-3 text-[color:var(--fg-muted)]" />
           <span>{ohlcvData.length} {t('chart.candles')}</span>
         </div>
       </div>
 
       <div className="relative flex-1 min-h-0">
         {isLoading && (
-          <div className="absolute inset-0 bg-[#0A0A0A] flex items-center justify-center z-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cathedral-500"></div>
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[color:var(--bg-surface)]/90">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[color:var(--fg-strong)]"></div>
           </div>
         )}
         <div ref={chartContainerRef} className="w-full h-full" />

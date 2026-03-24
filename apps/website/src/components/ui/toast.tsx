@@ -22,63 +22,54 @@ export function Toast({ message, type, duration = 5000, onClose }: ToastProps) {
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
+        return <CheckCircle className="h-5 w-5 text-[color:var(--fg-strong)]" />;
       case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-400" />;
+        return <AlertCircle className="h-5 w-5 text-[color:var(--danger)]" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-400" />;
+        return <Info className="h-5 w-5 text-[color:var(--fg-muted)]" />;
     }
   };
 
-  const getBgColor = () => {
+  const getTone = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-500/10 border-green-500/20';
+        return 'border-border bg-[color:var(--bg-surface)]';
       case 'error':
-        return 'bg-red-500/10 border-red-500/20';
+        return 'border-[color:var(--danger)]/20 bg-[color:var(--bg-surface)]';
       case 'info':
-        return 'bg-blue-500/10 border-blue-500/20';
+        return 'border-border bg-[color:var(--bg-surface)]';
     }
   };
 
   return (
-    <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg border ${getBgColor()} backdrop-blur-sm`}>
-      <div className="flex items-center gap-3">
+    <div className={`fixed right-4 top-4 z-50 border px-4 py-3 shadow-sm ${getTone()}`}>
+      <div className="flex items-start gap-3">
         {getIcon()}
-        <p className="text-white text-sm">{message}</p>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          <X className="w-4 h-4" />
+        <p className="max-w-sm text-[13px] leading-6 text-[color:var(--fg-body)]">{message}</p>
+        <button onClick={onClose} className="text-[color:var(--fg-muted)] transition-colors hover:text-[color:var(--fg-strong)]">
+          <X className="h-4 w-4" />
         </button>
       </div>
     </div>
   );
 }
 
-// Toast hook
 export function useToast() {
   const [toasts, setToasts] = useState<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    const id = Math.random().toString(36).substr(2, 9);
-    setToasts(prev => [...prev, { id, message, type }]);
+    const id = Math.random().toString(36).slice(2, 11);
+    setToasts((prev) => [...prev, { id, message, type }]);
   };
 
   const removeToast = (id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
   const ToastContainer = () => (
     <>
-      {toasts.map(toast => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          onClose={() => removeToast(toast.id)}
-        />
+      {toasts.map((toast) => (
+        <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
       ))}
     </>
   );

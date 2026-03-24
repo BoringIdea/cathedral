@@ -49,66 +49,70 @@ export default function Holders({ poolAddress, limit = 10, className }: HoldersP
     return () => clearInterval(intervalId);
   }, [poolAddress, limit]);
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   if (isLoading && !holdersData) {
     return (
-      <div className={cn("animate-pulse space-y-2", className)}>
-        <div className="h-4 bg-secondary/20 w-1/4 rounded-sm" />
-        <div className="h-20 bg-secondary/10 rounded-sm" />
+      <div className={cn('animate-pulse space-y-3', className)}>
+        <div className="h-4 w-28 bg-[color:var(--bg-muted)]" />
+        <div className="h-48 border border-border bg-[color:var(--bg-surface)]" />
       </div>
     );
   }
 
   return (
-    <div className={cn("font-mono text-[10px] leading-tight select-none", className)}>
-      {/* Header Stat Area */}
-      <div className="flex items-center justify-between mb-3 border-b border-border/40 pb-1.5">
+    <div className={cn('space-y-3 text-[11px] leading-tight text-[color:var(--fg-body)]', className)}>
+      <div className="flex items-center justify-between border-b border-border pb-2">
         <div className="flex items-center gap-2">
-          <Users className="w-3 h-3 text-blue-500" />
-          <h3 className="uppercase tracking-widest font-black text-foreground">{t('holders.title')}</h3>
+          <Users className="h-3.5 w-3.5 text-[color:var(--fg-strong)]" />
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.24em] text-[color:var(--fg-strong)]">
+            {t('holders.title')}
+          </h3>
         </div>
-        <div className="flex items-center gap-1.5 opacity-50 font-bold">
-          <Activity className="w-2.5 h-2.5" />
+        <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+          <Activity className="h-3 w-3" />
           <span>{t('holders.live')}</span>
         </div>
       </div>
 
-      <div className="bg-secondary/5 border border-border/20 rounded-sm overflow-hidden">
-        <div className="grid grid-cols-2 bg-secondary/10 border-b border-border/20 py-2 px-3">
-          <div className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{t('holders.address_identity')}</div>
-          <div className="text-[8px] text-muted-foreground uppercase font-black tracking-widest text-right">{t('holders.ownership')}</div>
+      <div className="overflow-hidden border border-border bg-[color:var(--bg-surface)]">
+        <div className="grid grid-cols-[1fr_auto] border-b border-border bg-[color:var(--bg-muted)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+          <div>{t('holders.address_identity')}</div>
+          <div className="text-right">{t('holders.ownership')}</div>
         </div>
 
-        <div className="divide-y divide-border/10 max-h-[300px] overflow-auto custom-scrollbar">
+        <div className="max-h-[320px] divide-y divide-border overflow-auto custom-scrollbar">
           {holdersData?.holders.map((holder, index) => (
-            <div key={holder.address} className="group flex items-center justify-between py-2 px-3 hover:bg-blue-500/[0.03] transition-colors">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="text-[8px] font-black text-muted-foreground opacity-30">0{index + 1}</span>
-                <span className="text-foreground font-bold truncate tracking-tight">{formatAddress(holder.address)}</span>
-                {index === 0 && <ShieldCheck className="w-2.5 h-2.5 text-blue-500/50 shrink-0" />}
-              </div>
-              <div className="text-right">
-                <span className="text-[11px] font-black italic tracking-tighter text-blue-400 leading-none">
-                  {holder.percentage.toFixed(4)}%
+            <div
+              key={holder.address}
+              className="grid grid-cols-[1fr_auto] items-center gap-4 px-4 py-3 transition-colors hover:bg-[color:var(--bg-muted)]"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+                  {String(index + 1).padStart(2, '0')}
                 </span>
+                <span className="truncate font-mono text-[11px] text-[color:var(--fg-strong)]">{formatAddress(holder.address)}</span>
+                {index === 0 && <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--fg-muted)]" />}
+              </div>
+              <div className="text-right font-mono text-[12px] text-[color:var(--fg-strong)]">
+                {holder.percentage.toFixed(4)}%
               </div>
             </div>
           ))}
 
           {(!holdersData || holdersData.holders.length === 0) && (
-            <div className="py-8 text-center text-muted-foreground/30 font-black uppercase tracking-widest">
+            <div className="px-4 py-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">
               {t('holders.zero_nodes')}
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-center gap-1.5 opacity-20 text-[8px] font-black uppercase tracking-widest">
-        <div className="w-1 h-1 bg-blue-500 rounded-full" />
-        {t('holders.total_supply_node')}: {holdersData?.totalSupply.toLocaleString() || '--'} {t('holders.shares')}
+      <div className="flex items-center justify-between border-t border-border pt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">
+        <span>{t('holders.total_supply_node')}</span>
+        <span className="text-[color:var(--fg-strong)]">
+          {holdersData?.totalSupply.toLocaleString() || '--'} {t('holders.shares')}
+        </span>
       </div>
     </div>
   );

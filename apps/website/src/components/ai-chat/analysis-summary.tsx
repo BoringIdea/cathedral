@@ -1,13 +1,13 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  TrendingUp, 
-  Shield, 
-  AlertTriangle, 
+import {
+  TrendingUp,
+  Shield,
+  AlertTriangle,
   CheckCircle,
   XCircle,
-  Star
+  Star,
 } from "lucide-react";
 
 interface AnalysisData {
@@ -25,101 +25,85 @@ interface AnalysisSummaryProps {
 }
 
 export function AnalysisSummary({ analysis, repositoryName }: AnalysisSummaryProps) {
-  const getRecommendationColor = (recommendation: string) => {
+  const getRecommendationTone = (recommendation: string) => {
     switch (recommendation.toLowerCase()) {
-      case 'high':
-        return 'text-emerald-400';
-      case 'moderate':
-        return 'text-yellow-400';
-      case 'low':
-        return 'text-red-400';
+      case "high":
+        return {
+          text: "text-[color:var(--fg-strong)]",
+          icon: <CheckCircle className="h-4 w-4 text-[color:var(--fg-strong)]" />,
+        };
+      case "moderate":
+        return {
+          text: "text-[color:var(--fg-body)]",
+          icon: <AlertTriangle className="h-4 w-4 text-[color:var(--fg-body)]" />,
+        };
+      case "low":
+        return {
+          text: "text-[color:var(--danger)]",
+          icon: <XCircle className="h-4 w-4 text-[color:var(--danger)]" />,
+        };
       default:
-        return 'text-gray-400';
+        return {
+          text: "text-[color:var(--fg-muted)]",
+          icon: <Shield className="h-4 w-4 text-[color:var(--fg-muted)]" />,
+        };
     }
   };
 
-  const getRecommendationIcon = (recommendation: string) => {
-    switch (recommendation.toLowerCase()) {
-      case 'high':
-        return <CheckCircle className="w-4 h-4 text-emerald-400" />;
-      case 'moderate':
-        return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
-      case 'low':
-        return <XCircle className="w-4 h-4 text-red-400" />;
-      default:
-        return <Shield className="w-4 h-4 text-gray-400" />;
-    }
-  };
+  const recommendationTone = getRecommendationTone(analysis.recommendation);
 
   return (
     <div className="space-y-4">
-      {/* Overview */}
-      <Card className="bg-[#1A1A1A] border border-gray-800/50">
+      <Card className="border-border bg-[color:var(--bg-surface)]">
         <CardContent className="p-4">
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-400" />
-            Project Overview
+          <h4 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+            <TrendingUp className="h-4 w-4" />
+            {repositoryName} overview
           </h4>
-          <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {analysis.overview}
-          </div>
+          <div className="cathedral-copy whitespace-pre-wrap text-[13px] leading-6">{analysis.overview}</div>
         </CardContent>
       </Card>
 
-      {/* Tech Stack */}
-      <Card className="bg-[#1A1A1A] border border-gray-800/50">
+      <Card className="border-border bg-[color:var(--bg-surface)]">
         <CardContent className="p-4">
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-            <Star className="w-4 h-4 text-purple-400" />
-            Technology Stack
+          <h4 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+            <Star className="h-4 w-4" />
+            Technology stack
           </h4>
           <div className="flex flex-wrap gap-2">
             {analysis.techStack.map((tech, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded border border-purple-500/30"
-              >
-                {tech}
-              </span>
+              <span key={index} className="border border-border bg-[color:var(--bg-muted)] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[color:var(--fg-body)]">{tech}</span>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Recommendation */}
-      <Card className="bg-[#1A1A1A] border border-gray-800/50">
-        <CardContent className="p-4">
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-            {getRecommendationIcon(analysis.recommendation)}
-            Investment Recommendation
+      <Card className="border-border bg-[color:var(--bg-surface)]">
+        <CardContent className="space-y-3 p-4">
+          <h4 className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+            {recommendationTone.icon}
+            Recommendation
           </h4>
-          <div className="flex items-center gap-2">
-            <span className={`text-lg font-bold ${getRecommendationColor(analysis.recommendation)}`}>
-              {analysis.recommendation}
-            </span>
-            <span className="text-sm text-gray-400">
-              Risk Level
-            </span>
+          <div className="flex items-baseline gap-2">
+            <span className={`cathedral-h2 text-[24px] ${recommendationTone.text}`}>{analysis.recommendation}</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">risk level</span>
           </div>
-          <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {analysis.riskAssessment}
-          </div>
+          <div className="cathedral-copy whitespace-pre-wrap text-[13px] leading-6">{analysis.riskAssessment}</div>
         </CardContent>
       </Card>
 
-      {/* Strengths */}
       {analysis.strengths.length > 0 && (
-        <Card className="bg-[#1A1A1A] border border-gray-800/50">
+        <Card className="border-border bg-[color:var(--bg-surface)]">
           <CardContent className="p-4">
-            <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              Key Strengths
+            <h4 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+              <CheckCircle className="h-4 w-4" />
+              Strengths
             </h4>
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {analysis.strengths.map((strength, index) => (
-                <li key={index} className="text-sm text-emerald-300 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
-                  {strength}
+                <li key={index} className="flex items-start gap-2 text-[13px] text-[color:var(--fg-body)]">
+                  <div className="mt-2 h-1 w-1 shrink-0 bg-[color:var(--fg-strong)]" />
+                  <span>{strength}</span>
                 </li>
               ))}
             </ul>
@@ -127,19 +111,18 @@ export function AnalysisSummary({ analysis, repositoryName }: AnalysisSummaryPro
         </Card>
       )}
 
-      {/* Concerns */}
       {analysis.concerns.length > 0 && (
-        <Card className="bg-[#1A1A1A] border border-gray-800/50">
+        <Card className="border-border bg-[color:var(--bg-surface)]">
           <CardContent className="p-4">
-            <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-yellow-400" />
-              Potential Concerns
+            <h4 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-strong)]">
+              <AlertTriangle className="h-4 w-4" />
+              Concerns
             </h4>
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {analysis.concerns.map((concern, index) => (
-                <li key={index} className="text-sm text-yellow-300 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
-                  {concern}
+                <li key={index} className="flex items-start gap-2 text-[13px] text-[color:var(--fg-body)]">
+                  <div className="mt-2 h-1 w-1 shrink-0 bg-[color:var(--fg-muted)]" />
+                  <span>{concern}</span>
                 </li>
               ))}
             </ul>

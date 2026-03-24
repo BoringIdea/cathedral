@@ -11,16 +11,16 @@ interface MessageInputProps {
   placeholder?: string;
 }
 
-export function MessageInput({ 
-  onSendMessage, 
-  disabled = false, 
-  placeholder = "Type your message..." 
+export function MessageInput({
+  onSendMessage,
+  disabled = false,
+  placeholder = "Ask about the repository...",
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
     if (message.trim() && !disabled) {
-      onSendMessage(message);
+      onSendMessage(message.trim());
       setMessage("");
     }
   };
@@ -37,18 +37,19 @@ export function MessageInput({
       <Input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         placeholder={placeholder}
         disabled={disabled}
-        className="flex-1 bg-[#2A2A2A] border-gray-700/50 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+        className="h-10 flex-1 border-border bg-[color:var(--bg-surface)] font-mono text-[11px] text-[color:var(--fg-strong)] placeholder:text-[color:var(--fg-muted)] focus-visible:ring-ring"
       />
       <Button
         onClick={handleSend}
         disabled={disabled || !message.trim()}
         size="sm"
-        className="bg-blue-500 hover:bg-blue-600 text-white px-3"
+        variant="outline"
+        className="h-10 border-border bg-[color:var(--fg-strong)] px-3 text-[color:var(--bg-surface)] hover:bg-[color:var(--fg-body)]"
       >
-        <Send className="w-4 h-4" />
+        <Send className="h-4 w-4" />
       </Button>
     </div>
   );

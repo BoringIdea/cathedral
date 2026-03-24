@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Rocket, TrendingUp, User, BookOpen, Settings, BarChart2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Rocket, User, BookOpen, BarChart2, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { useTranslation } from '@/lib/i18n-context';
-
-/* 
-  Navigation items are now generated dynamically inside the component 
-  to support internationalization.
-*/
+import { useTranslation } from "@/lib/i18n-context";
 
 interface SidebarProps {
   isCollapsed?: boolean;
@@ -22,32 +16,36 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const { t } = useTranslation();
 
   const navigation = [
-    { name: t('sidebar.markets'), href: "/", icon: BarChart2 },
-    { name: t('sidebar.launch'), href: "/repository/create", icon: Rocket },
-    { name: t('sidebar.litepaper'), href: "/litepaper", icon: BookOpen },
-    { name: t('sidebar.profile'), href: "/user", icon: User },
+    { name: t("sidebar.markets"), href: "/", icon: BarChart2 },
+    { name: t("sidebar.launch"), href: "/repository/create", icon: Rocket },
+    { name: t("sidebar.litepaper"), href: "/litepaper", icon: BookOpen },
+    { name: t("sidebar.profile"), href: "/user", icon: User },
   ];
 
   return (
-    <div className={cn(
-      "flex flex-col bg-background border-r border-border h-screen sticky top-0 transition-all duration-300 group pb-10",
-      isCollapsed ? "w-16" : "w-56"
-    )}>
-      <div className={cn(
-        "flex items-center h-16 border-b border-border transition-all duration-300",
-        isCollapsed ? "px-4 justify-center" : "px-4"
-      )}>
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center shrink-0">
-            <TrendingUp className="w-5 h-5 text-primary-foreground" />
-          </div>
-          {!isCollapsed && <span className="text-xl font-bold tracking-tighter truncate animate-in fade-in duration-500">CATHEDRAL</span>}
+    <aside
+      className={cn(
+        "sticky top-0 flex h-screen flex-col border-r border-border bg-[color:var(--bg-page)] transition-all duration-300 pb-10",
+        isCollapsed ? "w-16" : "w-56"
+      )}
+    >
+      <div className={cn("border-b border-border px-3 py-3", isCollapsed ? "px-2" : "px-4")}>
+        <Link
+          href="/"
+          className={cn(
+            "flex min-h-[42px] items-center text-[color:var(--fg-strong)]",
+            isCollapsed ? "justify-center" : "justify-start"
+          )}
+        >
+          {isCollapsed ? (
+            <span className="text-[24px] leading-none tracking-[-0.04em]">C</span>
+          ) : (
+            <span className="text-[40px] leading-none tracking-[-0.04em]">Cathedral</span>
+          )}
         </Link>
       </div>
-      <nav className={cn(
-        "flex-1 py-6 space-y-1 transition-all duration-300",
-        isCollapsed ? "px-2" : "px-4"
-      )}>
+
+      <nav className={cn("flex-1 space-y-1 px-3 py-5", isCollapsed ? "px-2 pt-4" : "pt-4")}>
         {navigation.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           return (
@@ -55,37 +53,30 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 py-2 text-sm font-medium rounded-sm transition-all duration-300 relative group/item",
-                isCollapsed ? "px-0 justify-center" : "px-2",
+                "group/item flex items-center gap-3 border px-3 py-3 text-[11px] uppercase tracking-[0.18em] transition-colors font-mono",
+                isCollapsed && "justify-center px-0",
                 isActive
-                  ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  ? "border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-strong)]"
+                  : "border-transparent text-[color:var(--fg-muted)] hover:border-[color:var(--border-hairline)] hover:bg-[color:var(--bg-surface)] hover:text-[color:var(--fg-strong)]"
               )}
               title={isCollapsed ? item.name : undefined}
             >
-              <item.icon className={cn("w-4 h-4 shrink-0 transition-transform", isActive ? "text-foreground" : "text-muted-foreground", isCollapsed && "group-hover/item:scale-110")} />
-              {!isCollapsed && <span className="truncate animate-in slide-in-from-left-2 duration-300">{item.name}</span>}
-              {isCollapsed && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-popover text-popover-foreground text-[10px] font-bold uppercase tracking-widest rounded-sm opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity border border-border z-50 whitespace-nowrap">
-                  {item.name}
-                </div>
-              )}
+              <item.icon className="h-4 w-4 shrink-0" />
+              {!isCollapsed && <span className="truncate">{item.name}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Collapse Toggle at Bottom */}
-      <div className="p-4 border-t border-border flex justify-center">
+      <div className="border-t border-border p-3 flex justify-center">
         <button
           onClick={onToggle}
-          className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-sm transition-colors text-muted-foreground hover:text-foreground border border-border/50"
+          className="flex h-9 w-9 items-center justify-center border border-border text-[color:var(--fg-muted)] transition-colors hover:bg-[color:var(--bg-surface)] hover:text-[color:var(--fg-strong)]"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
-
-    </div>
+    </aside>
   );
 }

@@ -13,43 +13,39 @@ export function MobileBlocker() {
       setIsMobile(window.innerWidth < 768);
     };
 
-    // Initial check
     checkMobile();
-
-    // Add event listener
     window.addEventListener('resize', checkMobile);
-
-    // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   if (!isMobile) return null;
 
   return (
-    <div className="fixed inset-0 z-[2147483647] bg-black flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
-      <div className="bg-secondary/10 p-8 rounded-sm border border-border max-w-sm w-full relative overflow-hidden">
-        {/* Decorative Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-[color:var(--bg-page)] p-8 text-center">
+      <div
+        className="relative w-full max-w-sm border bg-[color:var(--bg-surface)] p-8"
+        style={{ borderColor: "var(--border-hairline)" }}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:18px_18px]" />
 
         <div className="relative z-10 flex flex-col items-center gap-6">
-          <div className="flex items-center gap-4 text-muted-foreground/30">
-            <Smartphone className="w-12 h-12" />
+          <div className="flex items-center gap-4 text-[color:var(--fg-muted)]">
+            <Smartphone className="h-10 w-10" />
             <div className="h-px w-8 bg-current" />
-            <Monitor className="w-12 h-12 text-primary animate-pulse" />
+            <Monitor className="h-10 w-10 text-[color:var(--fg-strong)]" />
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-black uppercase tracking-widest text-foreground">
-              {t('mobile_block.title')}
-            </h2>
-            <div className="h-0.5 w-12 bg-primary/50 mx-auto" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-mono">
-              {t('mobile_block.description')}
-            </p>
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">Desktop only</div>
+            <h2 className="cathedral-h2 text-[24px]">{t('mobile_block.title')}</h2>
+            <p className="cathedral-copy text-[13px] leading-6">{t('mobile_block.description')}</p>
           </div>
 
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 border border-border/50 px-3 py-1.5 rounded-full">
-            Desktop Terminal v0.0.1
+          <div
+            className="border bg-[color:var(--bg-muted)] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]"
+            style={{ borderColor: "var(--border-hairline)" }}
+          >
+            desktop interface
           </div>
         </div>
       </div>

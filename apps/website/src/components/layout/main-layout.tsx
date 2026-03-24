@@ -13,7 +13,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-[color:var(--bg-page)] text-foreground">
       <div className="flex flex-1">
         {/* Sidebar */}
         <Sidebar

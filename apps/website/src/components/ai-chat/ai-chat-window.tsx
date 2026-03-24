@@ -1,28 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageInput } from "@/components/ai-chat/message-input";
 import { MDXMessageRenderer } from "@/components/ai-chat/mdx-message-renderer";
-import {
-  X,
-  Bot,
-  User,
-  Loader2,
-  Terminal,
-  Activity,
-  Cpu,
-  BarChart3,
-  ShieldAlert
-} from "lucide-react";
+import { X, Bot, Loader2, Cpu, BarChart3, Activity, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatMessage {
   id: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
 }
 
@@ -33,40 +23,43 @@ interface AIChatWindowProps {
   onClose: () => void;
 }
 
-export function AIChatWindow({
-  repositoryId,
-  repositoryName,
-  isOpen,
-  onClose
-}: AIChatWindowProps) {
+const analysisButtons = [
+  { id: "technical", icon: Cpu, label: "Technical" },
+  { id: "investment", icon: BarChart3, label: "Capital" },
+  { id: "community", icon: Activity, label: "Community" },
+  { id: "risk", icon: ShieldAlert, label: "Risk" },
+] as const;
+
+export function AIChatWindow({ repositoryId, repositoryName, isOpen, onClose }: AIChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [hasInitialAnalysis, setHasInitialAnalysis] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = useCallback((delay: number = 0) => {
+  const scrollToBottom = useCallback((delay = 0) => {
     const scroll = () => {
       if (scrollAreaRef.current) {
         const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
         if (viewport) viewport.scrollTop = viewport.scrollHeight;
       }
     };
+
     if (delay > 0) setTimeout(scroll, delay);
     else scroll();
   }, []);
 
   const loadInitialAnalysis = useCallback(() => {
-    const welcomeMessage: ChatMessage = {
-      id: `welcome-${Date.now()}`,
-      content: `# 🤖 AI NEURAL ASSISTANT
-Neural link established for **${repositoryName}**. Scanning repository architecture and market sentiment...
+    setMessages([
+      {
+        id: `welcome-${Date.now()}`,
+        content: `# ${repositoryName}
 
-Choose a specialized analysis module or transmit a manual query:`,
-      role: 'assistant',
-      timestamp: new Date()
-    };
-    setMessages([welcomeMessage]);
+Ask for a repository read, or start with one of the prepared lenses below.`,
+        role: "assistant",
+        timestamp: new Date(),
+      },
+    ]);
     setHasInitialAnalysis(true);
   }, [repositoryName]);
 
@@ -80,116 +73,167 @@ Choose a specialized analysis module or transmit a manual query:`,
 
   const sendAnalysisRequest = async (analysisType: string) => {
     if (isLoading) return;
-    const analysisTitles = {
-      'technical': 'TECHNICAL STACK INQUIRY',
-      'investment': 'MARKET CAPITAL ANALYSIS',
-      'community': 'COMMUNITY SOCIAL GRAPH',
-      'risk': 'SYSTEMIC RISK ASSESSMENT'
+
+    const analysisTitles: Record<string, string> = {
+      technical: "Technical review",
+      investment: "Capital review",
+      community: "Community review",
+      risk: "Risk review",
     };
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      content: `> INVOKING MODULE: ${analysisTitles[analysisType as keyof typeof analysisTitles]}`,
-      role: 'user',
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, userMessage]);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `user-${Date.now()}`,
+        content: analysisTitles[analysisType] || analysisType,
+        role: "user",
+        timestamp: new Date(),
+      },
+    ]);
+
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ai-chat/analyze-${analysisType}/${repositoryId}`, { method: 'POST' });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ai-chat/analyze-${analysisType}/${repositoryId}`, {
+        method: "POST",
+      });
       const result = await response.json();
       if (result.success && result.data) {
-        setMessages(prev => [...prev, { id: `ai-${Date.now()}`, content: result.data.message, role: 'assistant', timestamp: new Date() }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `ai-${Date.now()}`,
+            content: result.data.message,
+            role: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
         setSessionId(result.data.sessionId);
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: `err-${Date.now()}`, content: 'FAULT: Analysis stream interrupted.', role: 'assistant', timestamp: new Date() }]);
-    } finally { setIsLoading(false); }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `err-${Date.now()}`,
+          content: "The analysis request did not complete. Try again.",
+          role: "assistant",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
-    setMessages(prev => [...prev, { id: `u-${Date.now()}`, content: content.trim(), role: 'user', timestamp: new Date() }]);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `u-${Date.now()}`,
+        content: content.trim(),
+        role: "user",
+        timestamp: new Date(),
+      },
+    ]);
+
     setIsLoading(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ai-chat/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: content.trim(), repositoryId, sessionId })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: content.trim(), repositoryId, sessionId }),
       });
       const result = await response.json();
       if (result.success && result.data) {
-        setMessages(prev => [...prev, { id: `a-${Date.now()}`, content: result.data.message, role: 'assistant', timestamp: new Date() }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            content: result.data.message,
+            role: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
         setSessionId(result.data.sessionId);
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: `e-${Date.now()}`, content: 'COMMS FAILURE: Retrying link...', role: 'assistant', timestamp: new Date() }]);
-    } finally { setIsLoading(false); }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `e-${Date.now()}`,
+          content: "The reply stream was interrupted. Try again.",
+          role: "assistant",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 font-mono select-none">
-      <Card className="w-full max-w-4xl h-[85vh] bg-[#0A0A0A] border border-border/40 shadow-sm relative overflow-hidden flex flex-col">
-        {/* Background Decorative Element */}
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border/20 shrink-0">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]">
+      <Card className="flex h-[85vh] w-full max-w-4xl flex-col overflow-hidden border-border bg-[color:var(--bg-page)] shadow-sm">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-10 h-10 bg-secondary/20 border border-border/40 rounded-sm flex items-center justify-center">
-                <Bot className="w-5 h-5 text-blue-400" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-[#0A0A0A] rounded-full animate-pulse" />
+            <div className="flex h-10 w-10 items-center justify-center border border-border bg-[color:var(--bg-surface)]">
+              <Bot className="h-5 w-5 text-[color:var(--fg-strong)]" />
             </div>
             <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-0.5">Neural Interface / Link Active</h3>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black italic tracking-tight text-foreground">{repositoryName.toUpperCase()}</span>
-                <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/10 text-blue-400 font-bold border border-blue-500/20 rounded-sm">V1.0</span>
-              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--fg-muted)]">Repository assistant</div>
+              <div className="cathedral-h2 mt-1 text-[24px]">{repositoryName}</div>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-rose-500/10 hover:text-rose-500 border border-transparent hover:border-rose-500/20 transition-all">
-            <X className="w-4 h-4" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="h-8 w-8 border border-transparent p-0 text-[color:var(--fg-muted)] hover:border-border hover:bg-[color:var(--bg-surface)] hover:text-[color:var(--fg-strong)]"
+          >
+            <X className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 flex flex-col min-h-0 bg-secondary/5">
-          <ScrollArea ref={scrollAreaRef} className="flex-1 p-6">
-            <div className="space-y-8 max-w-3xl mx-auto">
+        <div className="flex min-h-0 flex-1 flex-col bg-[color:var(--bg-muted)]/35">
+          <ScrollArea ref={scrollAreaRef} className="flex-1 px-6 py-6">
+            <div className="mx-auto max-w-3xl space-y-8">
               {messages.map((message) => (
-                <div key={message.id} className={cn("flex gap-5 animate-in fade-in slide-in-from-bottom-2 duration-300", message.role === 'user' ? 'justify-end' : 'justify-start')}>
-                  {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-sm bg-secondary/20 border border-border/20 flex items-center justify-center shrink-0 mt-1">
-                      <Terminal className="w-4 h-4 text-blue-400/50" />
+                <div key={message.id} className={cn("flex gap-5", message.role === "user" ? "justify-end" : "justify-start")}>
+                  {message.role === "assistant" && (
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-[color:var(--bg-surface)]">
+                      <Bot className="h-4 w-4 text-[color:var(--fg-strong)]" />
                     </div>
                   )}
-                  <div className={cn("flex flex-col gap-1.5", message.role === 'user' ? 'items-end' : 'items-start')}>
-                    <div className={cn("p-4 rounded-sm text-[12px] leading-relaxed", message.role === 'user' ? "bg-blue-500/[0.08] border border-blue-500/30 text-blue-100" : "bg-background/40 border border-border/20")}>
-                      {message.role === 'assistant' ? (
-                        <div className="prose prose-invert prose-sm max-w-none prose-headings:font-black prose-headings:italic prose-headings:tracking-tighter prose-p:text-muted-foreground">
+
+                  <div className={cn("flex flex-col gap-2", message.role === "user" ? "items-end" : "items-start")}>
+                    <div
+                      className={cn(
+                        "border px-4 py-4 text-[13px] leading-6",
+                        message.role === "user"
+                          ? "border-border bg-[color:var(--fg-strong)] text-[color:var(--bg-surface)]"
+                          : "border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-body)]"
+                      )}
+                    >
+                      {message.role === "assistant" ? (
+                        <div>
                           <MDXMessageRenderer content={message.content} />
-                          {message.id.startsWith('welcome-') && (
-                            <div className="mt-8 pt-6 border-t border-border/10">
+                          {message.id.startsWith("welcome-") && (
+                            <div className="mt-6 border-t border-border pt-5">
                               <div className="grid grid-cols-2 gap-3">
-                                {[
-                                  { id: 'technical', icon: Cpu, label: 'Technical', color: 'blue' },
-                                  { id: 'investment', icon: BarChart3, label: 'Capital', color: 'emerald' },
-                                  { id: 'community', icon: Activity, label: 'Social', color: 'purple' },
-                                  { id: 'risk', icon: ShieldAlert, label: 'Defensive', color: 'rose' }
-                                ].map(btn => (
+                                {analysisButtons.map((button) => (
                                   <Button
-                                    key={btn.id}
+                                    key={button.id}
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => sendAnalysisRequest(btn.id)}
+                                    onClick={() => sendAnalysisRequest(button.id)}
                                     disabled={isLoading}
-                                    className={cn("h-11 justify-start gap-3 bg-secondary/10 border-border/40 hover:bg-secondary/20 transition-all group/btn")}
+                                    className="h-11 justify-start gap-3 border-border bg-[color:var(--bg-surface)] text-[color:var(--fg-strong)] hover:bg-[color:var(--bg-muted)]"
                                   >
-                                    <btn.icon className={cn("w-4 h-4 opacity-50 group-hover/btn:opacity-100 transition-opacity", `text-${btn.color}-500`)} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">{btn.label} Module</span>
+                                    <button.icon className="h-4 w-4" />
+                                    <span className="text-[10px] uppercase tracking-[0.18em]">{button.label}</span>
                                   </Button>
                                 ))}
                               </div>
@@ -197,39 +241,35 @@ Choose a specialized analysis module or transmit a manual query:`,
                           )}
                         </div>
                       ) : (
-                        <div className="font-bold opacity-90">{message.content}</div>
+                        <div className="font-mono text-[11px] leading-6">{message.content}</div>
                       )}
                     </div>
-                    <span className="text-[8px] font-black tracking-widest text-muted-foreground opacity-30 uppercase">{message.timestamp.toLocaleTimeString()} [UTC]</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)]">
+                      {message.timestamp.toLocaleTimeString()}
+                    </span>
                   </div>
                 </div>
               ))}
+
               {isLoading && (
                 <div className="flex gap-5 justify-start">
-                  <div className="w-8 h-8 rounded-sm bg-secondary/10 border border-border/10 flex items-center justify-center shrink-0">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-500/50" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-[color:var(--bg-surface)]">
+                    <Loader2 className="h-4 w-4 animate-spin text-[color:var(--fg-muted)]" />
                   </div>
-                  <div className="bg-background/20 border border-dashed border-border/40 p-3 rounded-sm">
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-500/40 animate-pulse">Processing Stream...</span>
+                  <div className="border border-dashed border-border bg-[color:var(--bg-surface)] px-4 py-3">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--fg-muted)]">Generating response</span>
                   </div>
                 </div>
               )}
             </div>
           </ScrollArea>
 
-          {/* Input Footer */}
-          <div className="px-6 py-5 border-t border-border/20 bg-background/40">
-            <div className="max-w-3xl mx-auto flex items-center gap-3">
+          <div className="border-t border-border bg-[color:var(--bg-page)] px-6 py-5">
+            <div className="mx-auto flex max-w-3xl items-center gap-3">
               <div className="flex-1">
-                <MessageInput
-                  onSendMessage={sendMessage}
-                  disabled={isLoading}
-                  placeholder="TRANSMIT QUERY TO NEURAL CORE..."
-                />
+                <MessageInput onSendMessage={sendMessage} disabled={isLoading} placeholder="Ask about the repository..." />
               </div>
-              <div className="text-[8px] text-muted-foreground font-black tracking-tighter opacity-20 hidden md:block">
-                CTRL+ENTER TO DISPATCH
-              </div>
+              <div className="hidden font-mono text-[10px] uppercase tracking-[0.16em] text-[color:var(--fg-muted)] md:block">Enter to send</div>
             </div>
           </div>
         </div>
